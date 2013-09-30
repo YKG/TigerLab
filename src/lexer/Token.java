@@ -59,7 +59,8 @@ public class Token
   public Kind kind; // kind of the token
   public String lexeme; // extra lexeme for this token, if any
   public Integer lineNum; // on which line of the source file this token appears
-
+  public Integer colNum;
+  
   // Some tokens don't come with lexeme but 
   // others do.
   public Token(Kind kind, Integer lineNum)
@@ -73,7 +74,12 @@ public class Token
     this(kind, lineNum);
     this.lexeme = lexeme;
   }
-
+  public Token(Kind kind, Integer lineNum, Integer colNum, String lexeme)
+  {
+    this(kind, lineNum, lexeme);
+    this.colNum = colNum;
+  }
+  
   @Override
   public String toString()
   {
@@ -84,7 +90,7 @@ public class Token
       new util.Todo();
 
     s = ": " + ((this.lexeme == null) ? "<NONE>" : this.lexeme) + " : at line "
-        + this.lineNum.toString();
+        + this.lineNum.toString() + ((this.colNum == null) ? "" : (", col " + this.colNum.toString()));
     return this.kind.toString() + s;
   }
 }
