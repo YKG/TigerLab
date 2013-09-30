@@ -76,17 +76,20 @@ public class Lexer {
 			colNum++;
 			if (-1 == c)// may return other value. DO NOT FORGET.
 			{
-				if(leftBlockComment > 0)
-					new Todo();
+				if(leftBlockComment > 0){
+					System.out.println("ERROR: Block Comment do not match.");
+					System.exit(1);
+				}
+					
 				return new Token(Kind.TOKEN_EOF, lineNum);
 			}
 			
 			if(leftBlockComment < 0){
-				new Todo();
+				System.out.println("ERROR: Block Comment do not match.");
+				System.exit(1);
 			}
 			
 			if(leftBlockComment > 0){
-				int ss = state;
 				if(state == 6){
 					if('*' == c){
 						state = 7;
@@ -117,6 +120,10 @@ public class Lexer {
 					}
 				}
 				
+				if('\n' == c){
+					lineNum++;
+					colNum = 1;
+				}
 				continue;
 			}
 			
@@ -124,7 +131,8 @@ public class Lexer {
 			
 			if (state == 0) {// EMPTY				
 				if(m.get("" + (char)c) != null)
-					return new Token(m.get("" + (char)c), lineNum, colNum - 1, ""+(char)c);
+//					return new Token(m.get("" + (char)c), lineNum, colNum - 1, ""+(char)c);
+					return new Token(m.get("" + (char)c), lineNum, colNum - 1, null);
 				
 				if (Character.isDigit(c)) {
 					state = 1;
@@ -145,7 +153,7 @@ public class Lexer {
 //					new Todo();
 					System.out.println("Illegal character: '" + (char)c + "' at line " + lineNum + ", col " + colNum);
 					System.exit(1);
-					return null;					
+//					return null;
 				}
 			} else if (state == 1) {// NUM
 				if (Character.isDigit(c)) {
@@ -162,13 +170,15 @@ public class Lexer {
 				} else{
 					colNum--;
 					this.fstream.reset();
-					return new Token(m.get(s) == null ? Kind.TOKEN_ID : m.get(s), lineNum, colNum - s.length(), s);
+					return new Token(m.get(s) == null ? Kind.TOKEN_ID : m.get(s), lineNum, colNum - s.length(), m.get(s) == null ? s : null);
 				}
 			} else if(state == 3){
-				if('&' == c) return new Token(Kind.TOKEN_AND, lineNum, colNum - s.length(), s);
+				if('&' == c) return new Token(Kind.TOKEN_AND, lineNum, colNum - s.length(), null);
 				else{
-					new Todo();// for signal &
-					return null;
+					System.out.println("ERROR: Illegal character '&'.");
+					System.exit(1);
+//					new Todo();// for signal &
+//					return null;
 				}
 			} else if(state == 4){
 				if('/' == c){
@@ -177,8 +187,10 @@ public class Lexer {
 					leftBlockComment++;
 					state = 6;
 				}else{
-					new Todo();// for signal /
-					return null;
+					System.out.println("ERROR: Illegal character '/'.");
+					System.exit(1);					
+//					new Todo();// for signal /
+//					return null;
 				}
 			} else if(state == 5){
 				if('\n' == c){
