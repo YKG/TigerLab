@@ -1,0 +1,46 @@
+$ java Monster 100000 >Monster.java
+$ time java Tiger ../monster/Monster.java -testlexer >../monster/out.txt
+
+real    0m8.084s
+user    0m0.000s
+sys     0m0.015s
+
+YKG@YKG-SZ /d/test/TigerLab/bin (Lab1)
+$ date
+Tue Oct  1 08:46:30     2013
+
+
+$ java Monster 1000000 >Monster.java
+YKG@YKG-SZ /d/test/TigerLab/bin (Lab1)
+$ date
+Tue Oct  1 08:49:31     2013
+
+YKG@YKG-SZ /d/test/TigerLab/bin (Lab1)
+$ time java Tiger ../monster/Monster.java -testlexer >../monster/out.txt
+
+real    1m21.141s
+user    0m0.015s
+sys     0m0.015s
+
+
+YKG@YKG-SZ /d/test/TigerLab/monster (Lab1)
+$ java MonsterGen 10000000 >Monster.java
+
+YKG@YKG-SZ /d/test/TigerLab/monster (Lab1)
+$ ls -l Monster.java
+-rw-r--r--    1 YKG      Administ 180000187 Oct  1 08:54 Monster.java
+
+YKG@YKG-SZ /d/test/TigerLab/monster (Lab1)
+$ cd -
+/d/test/TigerLab/bin
+
+YKG@YKG-SZ /d/test/TigerLab/bin (Lab1)
+$ date
+Tue Oct  1 08:55:14     2013
+
+YKG@YKG-SZ /d/test/TigerLab/bin (Lab1)
+$ time java Tiger ../monster/Monster.java -testlexer >../monster/out.txt
+
+real    13m22.921s
+user    0m0.015s
+sys     0m0.062s

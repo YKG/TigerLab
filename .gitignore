@@ -1,4 +1,6 @@
 *.txt
+*.class
 *~
 bin/
 .metadata/
+monster/Monster.java
