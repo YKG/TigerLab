@@ -13,12 +13,15 @@ public class Lexer {
 	HashMap<String, Kind> m;
 	int lineNum;
 	int colNum;
-	
+	String currentLine;
+	final int TAB_LENGTH = 4;
+	  
 	public Lexer(String fname, InputStream fstream) {
 		this.fname = fname;
 		this.fstream = fstream;
 		this.lineNum = 1;
 		this.colNum = 1;
+		this.currentLine = "";
 		this.m = new HashMap<String, Kind>();
 		m.put("+", Kind.TOKEN_ADD);
 		m.put("&&", Kind.TOKEN_AND);
@@ -71,6 +74,24 @@ public class Lexer {
 		int state = 0;
 		String s = "";
 		while (true) {
+			if(colNum == 1){
+				this.fstream.mark(4096); // BE CAREFUL! 4096. It won't pass the peer review.
+				int len = 0;
+				int ch;
+				currentLine = "";
+				for (len = 0; len < 4096; len++){
+					ch = this.fstream.read();
+					if(ch == -1) break;
+					if(ch == '\n') break;
+					currentLine += (char)ch;
+				}
+				if(len == 4096){
+					System.out.println("Sorry! I can not process such a long line!");
+					System.exit(1);
+				}
+				this.fstream.reset();
+			}
+			
 			this.fstream.mark(1);
 			c = this.fstream.read();
 			colNum++;
@@ -141,6 +162,9 @@ public class Lexer {
 					state = 2;
 					s += (char)c;
 				}else if(' ' == c || '\t' == c || '\n' == c || '\r' == c){
+					if('\t' == c) {
+						colNum += TAB_LENGTH - 1; // colNum has added by 1 when c was read in.
+					}
 					if('\n' == c) {
 						lineNum++;
 						colNum = 1;
@@ -221,4 +245,7 @@ public class Lexer {
 	public String getFname(){
 		return this.fname;
 	}
+	public String getCurrentLine(){
+		return this.currentLine;
+	}	
 }

@@ -10,6 +10,7 @@ public class Parser
   Token current;
   boolean varDecl2Stat;
 
+  
   public Parser(String fname, java.io.InputStream fstream)
   {
     lexer = new Lexer(fname, fstream);
@@ -31,19 +32,24 @@ public class Parser
     if (kind == current.kind)
       advance();
     else {
-      System.out.println("Expects: " + kind.toString());
-      System.out.println("But got: " + current.toString());
-      System.exit(1);
+    	error(kind.toString());
+//      System.out.println("Expects: " + kind.toString());
+//      System.out.println("But got: " + current.toString());
+//      System.exit(1);
+    	
 //      advance();
 //      eatToken(kind);
     }
   }
 
-  private void error()
+  private void error(String diagnosis)
   {
-    System.out.println("Syntax error: compilation aborting...\n");
-    System.out.print(lexer.getFname() + ": Expects an expresson, ");
-    System.out.println("But got: " + current.toString());    
+//    System.out.println("Syntax error: compilation aborting...\n");
+    System.out.print(lexer.getFname() + ":" + current.lineNum + ":" + current.colNum + ":");
+    System.out.println("expect " + diagnosis + ", but got: " + current.kind.toString());
+    System.out.println(lexer.getCurrentLine());
+//    System.out.print(lexer.getFname() + ": Expects an expression, ");
+//    System.out.println("But got: " + current.toString());    
 //    System.exit(1);
     advance();
     return;
@@ -120,13 +126,13 @@ public class Parser
 					eatToken(Kind.TOKEN_RPAREN);
 					return;
 				default:
-					error();
+					error("TOKEN_INT or TOKEN_ID");
 					retry = true;
 //					return;
 				}
 			}
 			default:
-				error();
+				error("An expression");
 				retry = true;
 //				return;
 			}
