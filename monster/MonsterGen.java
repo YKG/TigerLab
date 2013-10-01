@@ -26,7 +26,7 @@ public class MonsterGen
     }
     
     print ("class Monster\n{");
-    print ("\tstatic void main (String[] args)");
+    print ("\tpublic static void main (String[] args)");
     print ("\t{\n\t\tSystem.out.println (new Foo().foo());");
     print ("\t}\n}\n");
 
