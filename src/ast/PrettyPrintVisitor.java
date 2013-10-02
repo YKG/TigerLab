@@ -44,16 +44,29 @@ public class PrettyPrintVisitor implements Visitor
     // Lab2, exercise4: filling in missing code.
     // Similar for other methods with empty bodies.
     // Your code here:
+	e.left.accept(this);
+	this.say(" + ");
+	e.right.accept(this);
+	return;
   }
 
   @Override
   public void visit(ast.exp.And e)
   {
+	e.left.accept(this);
+	this.say(" && ");
+	e.right.accept(this);
+	return;	  
   }
 
   @Override
   public void visit(ast.exp.ArraySelect e)
   {
+	e.array.accept(this);
+	this.say("[");
+	e.index.accept(this);
+	this.say("]");
+	return;	  
   }
 
   @Override
@@ -75,6 +88,7 @@ public class PrettyPrintVisitor implements Visitor
   @Override
   public void visit(ast.exp.False e)
   {
+	  this.say("false");
   }
 
   @Override
@@ -86,6 +100,9 @@ public class PrettyPrintVisitor implements Visitor
   @Override
   public void visit(ast.exp.Length e)
   {
+	e.array.accept(this);
+	this.say(".length");
+	return;
   }
 
   @Override
@@ -100,6 +117,10 @@ public class PrettyPrintVisitor implements Visitor
   @Override
   public void visit(ast.exp.NewIntArray e)
   {
+	  this.say("new int [");
+	  e.exp.accept(this);
+	  this.say("]");
+	  return;
   }
 
   @Override
@@ -112,6 +133,9 @@ public class PrettyPrintVisitor implements Visitor
   @Override
   public void visit(ast.exp.Not e)
   {
+	  this.say("!");
+	  e.exp.accept(this);
+	  return;
   }
 
   @Override
@@ -148,6 +172,8 @@ public class PrettyPrintVisitor implements Visitor
   @Override
   public void visit(ast.exp.True e)
   {
+	this.say("true");
+	return;
   }
 
   // statements
@@ -157,18 +183,34 @@ public class PrettyPrintVisitor implements Visitor
     this.printSpaces();
     this.say(s.id + " = ");
     s.exp.accept(this);
-    this.say(";");
+    this.sayln(";");
     return;
   }
 
   @Override
   public void visit(ast.stm.AssignArray s)
   {
+	this.printSpaces();
+	this.say(s.id + "[");
+	s.index.accept(this);
+	this.say("] = ");
+	s.exp.accept(this);
+	this.sayln(";");
+	return;
   }
 
   @Override
   public void visit(ast.stm.Block s)
   {
+	  this.printSpaces();
+	  this.say("{");
+	  for(ast.stm.T stm : s.stms){
+		  stm.accept(this);
+		  this.sayln("");
+	  }
+	  this.printSpaces();
+	  this.sayln("}");
+	  return;
   }
 
   @Override
@@ -204,17 +246,28 @@ public class PrettyPrintVisitor implements Visitor
   @Override
   public void visit(ast.stm.While s)
   {
+    this.printSpaces();
+    this.say("while (");
+    s.condition.accept(this);
+    this.sayln(")");
+    this.indent();
+    s.body.accept(this);
+    this.unIndent();
+    this.sayln("");    
+    return;	  
   }
 
   // type
   @Override
   public void visit(ast.type.Boolean t)
   {
+	  this.say("boolean");
   }
 
   @Override
   public void visit(ast.type.Class t)
   {
+	  this.say("class");
   }
 
   @Override
@@ -226,12 +279,17 @@ public class PrettyPrintVisitor implements Visitor
   @Override
   public void visit(ast.type.IntArray t)
   {
+	  this.say("int []");
   }
 
   // dec
   @Override
   public void visit(ast.dec.Dec d)
   {
+	  this.printSpaces();
+      d.type.accept(this);
+      this.sayln(" " + d.id + ";");
+      return;
   }
 
   // method
@@ -255,10 +313,11 @@ public class PrettyPrintVisitor implements Visitor
     this.sayln("  {");
 
     for (ast.dec.T d : m.locals) {
-      ast.dec.Dec dec = (ast.dec.Dec) d;
-      this.say("    ");
-      dec.type.accept(this);
-      this.say(" " + dec.id + ";\n");
+//      ast.dec.Dec dec = (ast.dec.Dec) d;
+//      this.say("    ");
+//      dec.type.accept(this);
+//      this.say(" " + dec.id + ";\n");
+    	d.accept(this);
     }
     this.sayln("");
     for (ast.stm.T s : m.stms)
@@ -283,11 +342,12 @@ public class PrettyPrintVisitor implements Visitor
     this.sayln("{");
 
     for (ast.dec.T d : c.decs) {
-      ast.dec.Dec dec = (ast.dec.Dec) d;
-      this.say("  ");
-      dec.type.accept(this);
-      this.say(" ");
-      this.sayln(dec.id + ";");
+//      ast.dec.Dec dec = (ast.dec.Dec) d;
+//      this.say("  ");
+//      dec.type.accept(this);
+//      this.say(" ");
+//      this.sayln(dec.id + ";");
+    	d.accept(this);
     }
     for (ast.method.T mthd : c.methods)
       mthd.accept(this);
