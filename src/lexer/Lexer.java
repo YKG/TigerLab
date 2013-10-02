@@ -4,7 +4,6 @@ import java.io.InputStream;
 import java.util.HashMap;
 
 import lexer.Token.Kind;
-import util.Todo;
 
 public class Lexer {
 	String fname; // the input file name to be compiled

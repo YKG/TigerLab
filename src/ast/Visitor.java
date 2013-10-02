@@ -9,6 +9,8 @@ public interface Visitor
 
   public void visit(ast.exp.ArraySelect e);
 
+  public void visit(ast.exp.Block e); // (exp)
+  
   public void visit(ast.exp.Call e);
 
   public void visit(ast.exp.False e);

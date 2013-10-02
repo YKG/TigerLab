@@ -1,7 +1,5 @@
 package ast;
 
-import ast.stm.Assign;
-
 public class Fac
 {
   // Lab2, exercise 2: read the following code and make

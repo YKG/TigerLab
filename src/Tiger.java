@@ -79,7 +79,7 @@ public class Tiger
       ast.PrettyPrintVisitor pp = new ast.PrettyPrintVisitor();
       theAst.accept(pp);
     }
-    
+
     // elaborate the AST, report all possible errors.
     elaborator.ElaboratorVisitor elab = new elaborator.ElaboratorVisitor();
     theAst.accept(elab);

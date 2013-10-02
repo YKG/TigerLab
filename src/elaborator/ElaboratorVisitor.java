@@ -39,6 +39,11 @@ public class ElaboratorVisitor implements ast.Visitor
   }
 
   @Override
+  public void visit(ast.exp.Block e)
+  {
+  }
+
+  @Override
   public void visit(ast.exp.Call e)
   {
     ast.type.T leftty;

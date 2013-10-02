@@ -68,7 +68,15 @@ public class PrettyPrintVisitor implements Visitor
 	this.say("]");
 	return;	  
   }
-
+  
+  @Override
+  public void visit(ast.exp.Block e) {
+  	this.say("(");
+  	e.exp.accept(this);
+  	this.say(")");
+  	return;
+  }
+  
   @Override
   public void visit(ast.exp.Call e)
   {
@@ -202,14 +210,17 @@ public class PrettyPrintVisitor implements Visitor
   @Override
   public void visit(ast.stm.Block s)
   {
+	  this.unIndent();
 	  this.printSpaces();
-	  this.say("{");
+	  this.sayln("{");
+	  this.indent();
 	  for(ast.stm.T stm : s.stms){
 		  stm.accept(this);
-		  this.sayln("");
 	  }
+	  this.unIndent();
 	  this.printSpaces();
 	  this.sayln("}");
+	  this.indent();
 	  return;
   }
 
@@ -223,12 +234,12 @@ public class PrettyPrintVisitor implements Visitor
     this.indent();
     s.thenn.accept(this);
     this.unIndent();
-    this.sayln("");
+//    this.sayln("");
     this.printSpaces();
     this.sayln("else");
     this.indent();
     s.elsee.accept(this);
-    this.sayln("");
+//    this.sayln("");
     this.unIndent();
     return;
   }
@@ -253,7 +264,7 @@ public class PrettyPrintVisitor implements Visitor
     this.indent();
     s.body.accept(this);
     this.unIndent();
-    this.sayln("");    
+//    this.sayln("");    
     return;	  
   }
 
@@ -313,13 +324,14 @@ public class PrettyPrintVisitor implements Visitor
     this.sayln("  {");
 
     for (ast.dec.T d : m.locals) {
-//      ast.dec.Dec dec = (ast.dec.Dec) d;
-//      this.say("    ");
-//      dec.type.accept(this);
-//      this.say(" " + dec.id + ";\n");
-    	d.accept(this);
+      ast.dec.Dec dec = (ast.dec.Dec) d;
+      this.say("    ");
+      dec.type.accept(this);
+      this.say(" " + dec.id + ";\n");
+//    	d.accept(this);
     }
-    this.sayln("");
+    if(m.locals.size() > 0)
+    	this.sayln("");
     for (ast.stm.T s : m.stms)
       s.accept(this);
     this.say("    return ");
@@ -342,15 +354,20 @@ public class PrettyPrintVisitor implements Visitor
     this.sayln("{");
 
     for (ast.dec.T d : c.decs) {
-//      ast.dec.Dec dec = (ast.dec.Dec) d;
-//      this.say("  ");
-//      dec.type.accept(this);
-//      this.say(" ");
-//      this.sayln(dec.id + ";");
-    	d.accept(this);
+      ast.dec.Dec dec = (ast.dec.Dec) d;
+      this.say("  ");
+      dec.type.accept(this);
+      this.say(" ");
+      this.sayln(dec.id + ";");
+//    	d.accept(this);
     }
-    for (ast.method.T mthd : c.methods)
+    int i = 0;
+    for (ast.method.T mthd : c.methods){
+      if(i > 0 || (i == 0 && c.decs.size() > 0))
+    	this.sayln("");
+      i++;
       mthd.accept(this);
+    }
     this.sayln("}");
     return;
   }
@@ -380,4 +397,5 @@ public class PrettyPrintVisitor implements Visitor
     }
     System.out.println("\n\n");
   }
+
 }
