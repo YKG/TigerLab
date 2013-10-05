@@ -11,6 +11,14 @@ public class Sub extends T
     this.right = right;
   }
 
+  public Sub(T left, T right, int lineNum, int colNum)
+  {
+	this.left = left;
+	this.right = right;
+    this.lineNum = lineNum;
+    this.colNum = colNum;
+  }
+  
   @Override
   public void accept(ast.Visitor v)
   {

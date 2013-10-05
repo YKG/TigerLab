@@ -8,7 +8,14 @@ public class NewObject extends T
   {
     this.id = id;
   }
-
+  
+  public NewObject(String id, int lineNum, int colNum)
+  {
+    this.id = id;
+    this.lineNum = lineNum;
+    this.colNum = colNum;
+  }
+  
   @Override
   public void accept(ast.Visitor v)
   {

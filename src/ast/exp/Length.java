@@ -9,6 +9,13 @@ public class Length extends T
     this.array = array;
   }
 
+  public Length(T array, int lineNum, int colNum)
+  {
+    this.array = array;
+    this.lineNum = lineNum;
+    this.colNum = colNum;
+  }
+  
   @Override
   public void accept(ast.Visitor v)
   {

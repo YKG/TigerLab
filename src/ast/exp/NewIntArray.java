@@ -8,7 +8,14 @@ public class NewIntArray extends T
   {
     this.exp = exp;
   }
-
+  
+  public NewIntArray(T exp, int lineNum, int colNum)
+  {
+    this.exp = exp;
+    this.lineNum = lineNum;
+    this.colNum = colNum;
+  }
+  
   @Override
   public void accept(ast.Visitor v)
   {

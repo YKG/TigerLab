@@ -9,6 +9,13 @@ public class Num extends T
     this.num = num;
   }
 
+  public Num(int num, int lineNum, int colNum)
+  {
+	this.num = num;
+    this.lineNum = lineNum;
+    this.colNum = colNum;
+  }
+  
   @Override
   public void accept(ast.Visitor v)
   {
