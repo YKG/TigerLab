@@ -13,11 +13,29 @@ public class Id extends T
     this.isField = false;
   }
 
+  public Id(String id, int lineNum, int colNum)
+  {
+    this.id = id;
+    this.type = null;
+    this.isField = false;
+    this.lineNum = lineNum;
+    this.colNum = colNum;
+  }
+  
   public Id(String id, ast.type.T type, boolean isField)
   {
     this.id = id;
     this.type = type;
     this.isField = isField;
+  }
+
+  public Id(String id, ast.type.T type, boolean isField, int lineNum, int colNum)
+  {
+    this.id = id;
+    this.type = type;
+    this.isField = isField;
+    this.lineNum = lineNum;
+    this.colNum = colNum;
   }
 
   @Override

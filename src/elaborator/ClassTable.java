@@ -1,6 +1,5 @@
 package elaborator;
 
-import util.Todo;
 
 public class ClassTable
 {
@@ -17,9 +16,10 @@ public class ClassTable
   {
     if (this.table.get(c) != null) {
       System.out.println("duplicated class: " + c);
-      System.exit(1);
+//      System.exit(1);
+    }else{
+    	this.table.put(c, cb);
     }
-    this.table.put(c, cb);
   }
 
   // put a field into this table
@@ -62,6 +62,19 @@ public class ClassTable
     }
     return type;
   }
+  
+  public boolean isA(String c, String ref)
+  {
+    ClassBinding cb = this.table.get(ref);
+    while (!c.equals(ref)) { // search all parent classes until found or fail
+      if (cb.extendss == null)
+        return false;
+      ref = cb.extendss;
+    }
+    return true;
+  }
+  
+    
 
   // get type of some method
   // return null for non-existing method
@@ -81,7 +94,7 @@ public class ClassTable
 
   public void dump()
   {
-    new Todo();
+	  System.out.println(this.table.toString());
   }
 
   @Override

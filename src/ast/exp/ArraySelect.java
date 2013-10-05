@@ -11,6 +11,14 @@ public class ArraySelect extends T
     this.index = index;
   }
 
+  public ArraySelect(T array, T index, int lineNum, int colNum)
+  {
+    this.array = array;
+    this.index = index;
+    this.lineNum = lineNum;
+    this.colNum = colNum;
+  }
+  
   @Override
   public void accept(ast.Visitor v)
   {

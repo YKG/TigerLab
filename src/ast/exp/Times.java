@@ -11,6 +11,14 @@ public class Times extends T
     this.right = right;
   }
 
+  public Times(T left, T right, int lineNum, int colNum)
+  {
+	this.left = left;
+	this.right = right;
+    this.lineNum = lineNum;
+    this.colNum = colNum;
+  }
+  
   @Override
   public void accept(ast.Visitor v)
   {

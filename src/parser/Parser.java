@@ -10,6 +10,7 @@ public class Parser
   Token current;
   boolean varDecl2Stat;
   String id_stat;
+  boolean ok;
 
   
   public Parser(String fname, java.io.InputStream fstream)
@@ -17,6 +18,7 @@ public class Parser
     lexer = new Lexer(fname, fstream);
     current = lexer.nextToken();
     varDecl2Stat = false;
+    ok = true;
   }
 
   // /////////////////////////////////////////////
@@ -45,6 +47,7 @@ public class Parser
 
   private void error(String diagnosis)
   {
+	  this.ok = false;
 //    System.out.println("Syntax error: compilation aborting...\n");
     System.out.print(lexer.getFname() + ":" + current.lineNum + ":" + current.colNum + ":");
     System.out.println("expect " + diagnosis + ", but got: " + current.kind.toString());
@@ -96,27 +99,32 @@ public class Parser
 			switch (current.kind) {
 			case TOKEN_LPAREN:
 				advance();
-				exp = parseExp();
+				exp = new ast.exp.Block(parseExp(), current.lineNum, current.colNum);
 				eatToken(Kind.TOKEN_RPAREN);
-				return new ast.exp.Block(exp);
+				return exp;
 			case TOKEN_NUM:
-				exp = new ast.exp.Num(Integer.parseInt(current.lexeme));
+				exp = new ast.exp.Num(Integer.parseInt(current.lexeme), current.lineNum, current.colNum);
 				advance();
 				return exp;
 			case TOKEN_TRUE:
+				exp = new ast.exp.True(current.lineNum, current.colNum);
 				advance();
-				return new ast.exp.True();
+				return exp;
 			case TOKEN_FALSE:
+				exp = new ast.exp.False(current.lineNum, current.colNum);
 				advance();
-				return new ast.exp.False();
+				return exp;
 			case TOKEN_THIS:
+				exp = new ast.exp.This(current.lineNum, current.colNum);
 				advance();
-				return new ast.exp.This();
+				return exp;
 			case TOKEN_ID:
-				exp = new ast.exp.Id(current.lexeme);
+				exp = new ast.exp.Id(current.lexeme, current.lineNum, current.colNum);
 				advance();
 				return exp;
 			case TOKEN_NEW: {
+				int line = current.lineNum;
+				int col = current.colNum;
 				advance();
 				switch (current.kind) {
 				case TOKEN_INT:
@@ -124,13 +132,13 @@ public class Parser
 					eatToken(Kind.TOKEN_LBRACK);
 					exp = parseExp();
 					eatToken(Kind.TOKEN_RBRACK);
-					return new ast.exp.NewIntArray(exp);
+					return new ast.exp.NewIntArray(exp, line, col);
 				case TOKEN_ID:
 					String id = current.lexeme;
 					advance();
 					eatToken(Kind.TOKEN_LPAREN);
 					eatToken(Kind.TOKEN_RPAREN);
-					return new ast.exp.NewObject(id);
+					return new ast.exp.NewObject(id, line, col);
 				default:
 					error("TOKEN_INT or TOKEN_ID");
 					retry = true;
@@ -152,6 +160,8 @@ public class Parser
   // -> AtomExp .length
   private ast.exp.T parseNotExp()
   {
+	int line = current.lineNum; 
+	int col = current.colNum;
 	ast.exp.T exp = null;	  
     exp = parseAtomExp();
     while (current.kind == Kind.TOKEN_DOT || current.kind == Kind.TOKEN_LBRACK) {
@@ -159,16 +169,16 @@ public class Parser
         advance();
         if (current.kind == Kind.TOKEN_LENGTH) {
           advance();
-          return new ast.exp.Length(exp);
+          return new ast.exp.Length(exp, line, col);
         }
         String id = current.lexeme;
         eatToken(Kind.TOKEN_ID);
         eatToken(Kind.TOKEN_LPAREN);
-        exp = new ast.exp.Call(exp, id, parseExpList());
+        exp = new ast.exp.Call(exp, id, parseExpList(), line, col);
         eatToken(Kind.TOKEN_RPAREN);
       } else {
         advance();
-        exp = new ast.exp.ArraySelect(exp, parseExp());
+        exp = new ast.exp.ArraySelect(exp, parseExp(), line, col);
         eatToken(Kind.TOKEN_RBRACK);
       }
     }
@@ -179,25 +189,29 @@ public class Parser
   // -> NotExp
   private ast.exp.T parseTimesExp()
   {
+	int line = current.lineNum;
+	int col = current.colNum;
 	boolean not = false;
 	ast.exp.T exp = null;
     while (current.kind == Kind.TOKEN_NOT) {
       advance();
-      not = !not;
+      not = !not;	/* YKG. Remember to keep the source code */
     }
     exp = parseNotExp();
-    return not ? new ast.exp.Not(exp) : exp;
+    return not ? new ast.exp.Not(exp, line, col) : exp;
   }
 
   // AddSubExp -> TimesExp * TimesExp
   // -> TimesExp
   private ast.exp.T parseAddSubExp()
   {
+	int line = current.lineNum;
+	int col = current.colNum;	  
 	ast.exp.T exp = null;
     exp = parseTimesExp();	  	  
     while (current.kind == Kind.TOKEN_TIMES) {
       advance();
-      exp = new ast.exp.Times(exp, parseTimesExp());
+      exp = new ast.exp.Times(exp, parseTimesExp(), line, col);
     }
     return exp;
   }
@@ -207,15 +221,17 @@ public class Parser
   // -> AddSubExp
   private ast.exp.T parseLtExp()
   {
+	int line = current.lineNum;
+	int col = current.colNum;	 	  
 	ast.exp.T exp = null;
     exp = parseAddSubExp();	  
     while (current.kind == Kind.TOKEN_ADD || current.kind == Kind.TOKEN_SUB) {
       if(current.kind == Kind.TOKEN_ADD){
     	  advance();
-    	  exp = new ast.exp.Add(exp, parseAddSubExp());
+    	  exp = new ast.exp.Add(exp, parseAddSubExp(), line, col);
       }else{
     	  advance();
-    	  exp = new ast.exp.Sub(exp, parseAddSubExp());
+    	  exp = new ast.exp.Sub(exp, parseAddSubExp(), line, col);
       }
     }
     return exp;
@@ -225,11 +241,13 @@ public class Parser
   // -> LtExp
   private ast.exp.T parseAndExp()
   {
+	int line = current.lineNum;
+	int col = current.colNum;		  
 	ast.exp.T exp = null;
     exp = parseLtExp();
     while (current.kind == Kind.TOKEN_LT) {
       advance();
-      exp = new ast.exp.Lt(exp, parseLtExp());
+      exp = new ast.exp.Lt(exp, parseLtExp(), line, col);
     }
     return exp;
   }
@@ -238,11 +256,13 @@ public class Parser
   // -> AndExp
   private ast.exp.T parseExp()
   {
+	int line = current.lineNum;
+	int col = current.colNum;		  
 	ast.exp.T exp = null;
     exp = parseAndExp();
     while (current.kind == Kind.TOKEN_AND) {
       advance();
-      exp = new ast.exp.And(exp, parseAndExp());
+      exp = new ast.exp.And(exp, parseAndExp(), line, col);
     }
     return exp;
   }
@@ -376,9 +396,10 @@ public class Parser
 	ast.type.T type = parseType();
 	if(!varDecl2Stat){
 		String id = current.lexeme;
+		int lineNum = current.lineNum;
 		eatToken(Kind.TOKEN_ID);
 		eatToken(Kind.TOKEN_SEMI);
-		return new ast.dec.Dec(type, id);
+		return new ast.dec.Dec(type, id, lineNum);
 	}    
     return null;
   }
@@ -410,12 +431,12 @@ public class Parser
     if (current.kind == Kind.TOKEN_INT || current.kind == Kind.TOKEN_BOOLEAN
         || current.kind == Kind.TOKEN_ID) {
       type = parseType();
-      list.add(new ast.dec.Dec(type, current.lexeme));
+      list.add(new ast.dec.Dec(type, current.lexeme, current.lineNum));
       eatToken(Kind.TOKEN_ID);
       while (current.kind == Kind.TOKEN_COMMER) {
         advance();
         type = parseType();
-        list.add(new ast.dec.Dec(type, current.lexeme));
+        list.add(new ast.dec.Dec(type, current.lexeme, current.lineNum));
         eatToken(Kind.TOKEN_ID);
       }
     }
@@ -469,6 +490,7 @@ public class Parser
 	ast.classs.T classs = null;
     eatToken(Kind.TOKEN_CLASS);
     String id = current.lexeme;
+    int line = current.lineNum; 
     eatToken(Kind.TOKEN_ID);
     String extendss = null;
     if (current.kind == Kind.TOKEN_EXTENDS) {
@@ -482,7 +504,7 @@ public class Parser
     java.util.LinkedList<ast.method.T> methodList = new java.util.LinkedList<ast.method.T>();
     methodList = parseMethodDecls();
     eatToken(Kind.TOKEN_RBRACE);
-    classs = new ast.classs.Class(id, extendss, varList, methodList);
+    classs = new ast.classs.Class(id, extendss, varList, methodList, line);
     return classs;
   }
 
@@ -545,7 +567,9 @@ public class Parser
 
   public ast.program.T parse()
   {
-    return parseProgram();
-//    return null;
+	ast.program.Program p = parseProgram();
+	if(!this.ok)
+		return null;
+    return p;
   }
 }

@@ -8,6 +8,12 @@ public class Block extends T
   {
     this.exp = exp;
   }
+  
+  public Block(T exp, int lineNum, int colNum){
+	  this(exp);
+	  this.lineNum = lineNum;
+	  this.colNum = colNum;
+  }
 
   @Override
   public void accept(ast.Visitor v)

@@ -74,15 +74,17 @@ public class Tiger
       System.exit(1);
     }
     
-    // pretty printing the AST, if necessary
-    if (control.Control.dumpAst) {
-      ast.PrettyPrintVisitor pp = new ast.PrettyPrintVisitor();
-      theAst.accept(pp);
+    if(theAst != null){
+	    // pretty printing the AST, if necessary
+	    if (control.Control.dumpAst) {
+	      ast.PrettyPrintVisitor pp = new ast.PrettyPrintVisitor();
+	      theAst.accept(pp);
+	    }
+	
+	    // elaborate the AST, report all possible errors.
+	    elaborator.ElaboratorVisitor elab = new elaborator.ElaboratorVisitor();
+	    theAst.accept(elab);
     }
-
-    // elaborate the AST, report all possible errors.
-    elaborator.ElaboratorVisitor elab = new elaborator.ElaboratorVisitor();
-    theAst.accept(elab);
     
     return;
   }

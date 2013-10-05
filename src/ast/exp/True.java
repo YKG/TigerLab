@@ -6,6 +6,12 @@ public class True extends T
   {
   }
 
+  public True(int lineNum, int colNum)
+  {
+    this.lineNum = lineNum;
+    this.colNum = colNum;
+  }
+  
   @Override
   public void accept(ast.Visitor v)
   {

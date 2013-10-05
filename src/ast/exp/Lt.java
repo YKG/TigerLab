@@ -10,6 +10,14 @@ public class Lt extends T
     this.left = left;
     this.right = right;
   }
+  
+  public Lt(T left, T right, int lineNum, int colNum)
+  {
+    this.left = left;
+    this.right = right;
+    this.lineNum = lineNum;
+    this.colNum = colNum;
+  }
 
   @Override
   public void accept(ast.Visitor v)

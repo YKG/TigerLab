@@ -18,6 +18,14 @@ public class Class extends T
     this.decs = decs;
     this.methods = methods;
   }
+  
+  public Class(String id, String extendss,
+	      java.util.LinkedList<ast.dec.T> decs,
+	      java.util.LinkedList<ast.method.T> methods, int lineNum)
+  {
+    this(id, extendss, decs, methods);
+    this.lineNum = lineNum;
+  }
 
   @Override
   public void accept(Visitor v)
