@@ -142,12 +142,14 @@ private void error()
 				      if(b.booleanValue() && dec.type != null){
 				    	  if (dec.type.toString().equals(argsty.get(i).toString()))
 						    ;
-					      else if((dec.type instanceof ast.type.Class)
-				        	 && (this.classTable.get(((ast.type.Class)(dec.type)).id) == null)){
-				        	;	/* YKG. formal declare type is undefined */
+					      else{
+					    	  if((dec.type instanceof ast.type.Class) &&
+					    			  this.classTable.isA(dec.type.toString(), argsty.get(i).toString())){
+					    		  ;
+					    	  }else{
+					    		  error(e.args.get(i), argsty.get(i).toString(), dec.type.toString());  
+					    	  }
 					      }
-					      else
-					        error(e.args.get(i), argsty.get(i).toString(), dec.type.toString());  
 				      }
 				    }
 				    this.type = mty.retType;

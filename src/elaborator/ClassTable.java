@@ -62,6 +62,19 @@ public class ClassTable
     }
     return type;
   }
+  
+  public boolean isA(String c, String ref)
+  {
+    ClassBinding cb = this.table.get(ref);
+    while (!c.equals(ref)) { // search all parent classes until found or fail
+      if (cb.extendss == null)
+        return false;
+      ref = cb.extendss;
+    }
+    return true;
+  }
+  
+    
 
   // get type of some method
   // return null for non-existing method
