@@ -94,7 +94,19 @@ public class ClassTable
 
   public void dump()
   {
-	  System.out.println(this.table.toString());
+	  
+	  String key;
+	  java.util.Enumeration<String> keys = this.table.keys();
+	  while(keys.hasMoreElements()){
+		  key = keys.nextElement();
+		  System.out.println("==============================");
+		  System.out.println("Class " + key + ":");
+		  ClassBinding cb = this.table.get(key);
+		  cb.dump();
+//		  System.out.println(this.table.get(key));  
+	  }
+//	  System.out.println("Class");
+//	  System.out.println(this.table.toString());
   }
 
   @Override

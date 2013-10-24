@@ -461,8 +461,10 @@ private void error()
 //    this.methodTable.put(m.formals, m.locals);
     this.methodTable.put(m.formals, m.locals, this.classTable);
 //System.out.print("method: " + m.id + "\n\t");
-    if (control.Control.elabMethodTable)
+    if (control.Control.elabMethodTable){
+      System.out.println("dump Method: " + this.currentClass + "." + m.id);
       this.methodTable.dump();
+    }
     
     for (ast.stm.T s : m.stms)
       s.accept(this);
@@ -483,10 +485,24 @@ private void error()
   public void visit(ast.classs.Class c)
   {
     this.currentClass = c.id;
-	if(c.id.equals(c.extendss)){
-		System.out.println("Error: " + c.lineNum + ": Class '" + c.id + "' extends self");
-		/* YKG. Remember to mark the error */
+//	if(c.id.equals(c.extendss)){
+//		System.out.println("Error: " + c.lineNum + ": Class '" + c.id + "' extends self");
+//		/* YKG. Remember to mark the error */
+//	}
+	ClassBinding cb = this.classTable.get(c.id);
+	String father = cb.extendss;
+	while(father != null){
+//		System.out.println("Trace: " + c.id +" extends: " + father);
+		if(father.equals(c.id)){
+			System.out.println("Error: circular inheritance class: " + c.id);
+			break;
+		}
+		father = this.classTable.get(father).extendss;
 	}
+	if(father != null){
+		return;
+	}
+	
 
 	for (ast.dec.T dec : c.decs) {
       ast.dec.Dec d = (ast.dec.Dec) dec;

@@ -191,14 +191,17 @@ public class Parser
   {
 	int line = current.lineNum;
 	int col = current.colNum;
-	boolean not = false;
+//	boolean not = false; /* the 3 comment lines will compute the boolean value */
 	ast.exp.T exp = null;
-    while (current.kind == Kind.TOKEN_NOT) {
+    if (current.kind == Kind.TOKEN_NOT) {
       advance();
-      not = !not;	/* YKG. Remember to keep the source code */
+//      not = !not;	/* YKG. Remember to keep the source code */
+      exp = new ast.exp.Not(parseTimesExp(), line, col);
+    }else{
+    	exp = parseNotExp();
     }
-    exp = parseNotExp();
-    return not ? new ast.exp.Not(exp, line, col) : exp;
+//    return not ? new ast.exp.Not(exp, line, col) : exp;
+    return exp;
   }
 
   // AddSubExp -> TimesExp * TimesExp

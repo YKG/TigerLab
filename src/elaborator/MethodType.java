@@ -19,6 +19,9 @@ public class MethodType
       ast.dec.Dec decc = (ast.dec.Dec) dec;
       s = decc.type.toString() + "*" + s;
     }
+    if(s.equals("")){
+    	s = "<NULL>";
+    }
     s = s + " -> " + this.retType.toString();
     return s;
   }

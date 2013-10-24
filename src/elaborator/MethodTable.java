@@ -90,15 +90,16 @@ public class MethodTable
 
   public void dump()
   {
-//System.out.println("######## method dump ## begin #");		  
-	System.out.println(this.table.toString());
-//	  String key;
-//	  Enumeration<String> keys = this.table.keys();
-//	  while(keys.hasMoreElements()){
-//		  key = keys.nextElement();
-//		  System.out.println(this.table.get(key) + " " + key);  
-//	  }
-//System.out.println("######## method dump ## end   #");	  
+//System.out.println("--------------- MethodTable dump -- begin ----");		  
+  System.out.println("-------------------------------------");		  
+//	System.out.println(this.table.toString());
+	  String key;
+	  java.util.Enumeration<String> keys = this.table.keys();
+	  while(keys.hasMoreElements()){
+		  key = keys.nextElement();
+		  System.out.println(key + ": " + this.table.get(key));  
+	  }
+System.out.println("=============== MethodTable dump end ===========");	  
 //    new Todo();
   }
 

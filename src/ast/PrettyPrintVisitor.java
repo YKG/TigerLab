@@ -395,7 +395,7 @@ public class PrettyPrintVisitor implements Visitor
     for (ast.classs.T classs : p.classes) {
       classs.accept(this);
     }
-    System.out.println("\n\n");
+//    System.out.println("\n\n");
   }
 
 }

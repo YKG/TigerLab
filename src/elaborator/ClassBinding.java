@@ -42,6 +42,37 @@ public class ClassBinding
     }
   }
 
+  
+  public void dump()
+  {
+    System.out.print("extends: ");
+    if (this.extendss != null)
+      System.out.println(this.extendss);
+    else
+      System.out.println("<>");
+    System.out.println("\nfields:\n  ");
+	  String key;
+	  java.util.Enumeration<String> keys = this.fields.keys();
+	  while(keys.hasMoreElements()){
+		  key = keys.nextElement();
+//		  System.out.println("==============================");
+//		  System.out.println("Class " + key + ":");
+		  
+		  System.out.println(key + ": " + this.fields.get(key));  
+	  }
+//    System.out.println(fields.toString());
+    System.out.println("\nmethods:\n  ");
+//    System.out.println(methods.toString());
+    keys = this.methods.keys();
+	  while(keys.hasMoreElements()){
+		  key = keys.nextElement();
+//		  System.out.println("==============================");
+//		  System.out.println("Class " + key + ":");
+		  
+		  System.out.println(key + ": " + this.methods.get(key));  
+	  }
+  }
+  
   @Override
   public String toString()
   {
