@@ -1,5 +1,7 @@
 package codegen.C;
 
+import ast.exp.Block;
+
 // Given a Java ast, translate it into a C ast and outputs it.
 
 public class TranslateVisitor implements ast.Visitor
@@ -382,4 +384,11 @@ public class TranslateVisitor implements ast.Visitor
         this.methods, this.mainMethod);
     return;
   }
+
+@Override
+public void visit(Block e) {
+	// TODO Auto-generated method stub
+	///// YKGLAB3
+	System.err.println("HELP ME!!!");
+}
 }

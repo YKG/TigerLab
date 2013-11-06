@@ -57,11 +57,11 @@ public class Tiger
         cAst.accept(ppc);
         break;
       case Dalvik:
-        codegen.dalvik.TranslateVisitor transDalvik = new codegen.dalvik.TranslateVisitor();
-        ast.Fac.prog.accept(transDalvik);
-        codegen.dalvik.program.T dalvikAst = transDalvik.program;
-        codegen.dalvik.PrettyPrintVisitor ppDalvik = new codegen.dalvik.PrettyPrintVisitor();
-        dalvikAst.accept(ppDalvik);
+//        codegen.dalvik.TranslateVisitor transDalvik = new codegen.dalvik.TranslateVisitor();
+//        ast.Fac.prog.accept(transDalvik);
+//        codegen.dalvik.program.T dalvikAst = transDalvik.program;
+//        codegen.dalvik.PrettyPrintVisitor ppDalvik = new codegen.dalvik.PrettyPrintVisitor();
+//        dalvikAst.accept(ppDalvik);
         break;
       case X86:
         // similar
@@ -143,11 +143,11 @@ public class Tiger
       cAst.accept(ppc);
       break;
     case Dalvik:
-      codegen.dalvik.TranslateVisitor transDalvik = new codegen.dalvik.TranslateVisitor();
-      theAst.accept(transDalvik);
-      codegen.dalvik.program.T dalvikAst = transDalvik.program;
-      codegen.dalvik.PrettyPrintVisitor ppDalvik = new codegen.dalvik.PrettyPrintVisitor();
-      dalvikAst.accept(ppDalvik);
+//      codegen.dalvik.TranslateVisitor transDalvik = new codegen.dalvik.TranslateVisitor();
+//      theAst.accept(transDalvik);
+//      codegen.dalvik.program.T dalvikAst = transDalvik.program;
+//      codegen.dalvik.PrettyPrintVisitor ppDalvik = new codegen.dalvik.PrettyPrintVisitor();
+//      dalvikAst.accept(ppDalvik);
       break;
     case X86:
       // similar
