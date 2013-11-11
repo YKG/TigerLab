@@ -1,12 +1,12 @@
 package codegen.C;
 
-import ast.exp.Block;
 
 // Given a Java ast, translate it into a C ast and outputs it.
 
 public class TranslateVisitor implements ast.Visitor
 {
   private ClassTable table;
+  private java.util.LinkedList<String> localVarList;
   private String classId;
   private codegen.C.type.T type; // type after translation
   private codegen.C.dec.T dec;
@@ -23,6 +23,7 @@ public class TranslateVisitor implements ast.Visitor
   public TranslateVisitor()
   {
     this.table = new ClassTable();
+    this.localVarList = new java.util.LinkedList<String>();
     this.classId = null;
     this.type = null;
     this.dec = null;
@@ -48,16 +49,34 @@ public class TranslateVisitor implements ast.Visitor
   @Override
   public void visit(ast.exp.Add e)
   {
+	  e.left.accept(this);
+	  codegen.C.exp.T left = this.exp;
+	  e.right.accept(this);
+	  codegen.C.exp.T right = this.exp;
+	  this.exp = new codegen.C.exp.Add(left, right);
+	  return;
   }
 
   @Override
   public void visit(ast.exp.And e)
   {
+	  e.left.accept(this);
+	  codegen.C.exp.T left = this.exp;
+	  e.right.accept(this);
+	  codegen.C.exp.T right = this.exp;
+	  this.exp = new codegen.C.exp.And(left, right);
+	  return;
   }
 
   @Override
   public void visit(ast.exp.ArraySelect e)
   {
+	  e.array.accept(this);
+	  codegen.C.exp.T array = this.exp;
+	  e.index.accept(this);
+	  codegen.C.exp.T index = this.exp;
+	  this.exp = new codegen.C.exp.ArraySelect(array, index);
+	  return;
   }
 
   @Override
@@ -80,18 +99,26 @@ public class TranslateVisitor implements ast.Visitor
   @Override
   public void visit(ast.exp.False e)
   {
+	  this.exp = new codegen.C.exp.Num(0);
+	  return;
   }
 
   @Override
   public void visit(ast.exp.Id e)
   {
-    this.exp = new codegen.C.exp.Id(e.id);
+	if(e.isField)
+		this.exp = new codegen.C.exp.Id("this->" + e.id);
+	else
+		this.exp = new codegen.C.exp.Id(e.id);
     return;
   }
 
   @Override
   public void visit(ast.exp.Length e)
   {
+	  e.array.accept(this);
+	  this.exp = new codegen.C.exp.Length(this.exp);
+	  return;
   }
 
   @Override
@@ -108,6 +135,9 @@ public class TranslateVisitor implements ast.Visitor
   @Override
   public void visit(ast.exp.NewIntArray e)
   {
+	  e.exp.accept(this);
+	  this.exp = new codegen.C.exp.NewIntArray(this.exp);
+	  return;
   }
 
   @Override
@@ -120,6 +150,9 @@ public class TranslateVisitor implements ast.Visitor
   @Override
   public void visit(ast.exp.Not e)
   {
+	  e.exp.accept(this);
+	  this.exp = new codegen.C.exp.Not(this.exp);
+	  return;
   }
 
   @Override
@@ -161,25 +194,48 @@ public class TranslateVisitor implements ast.Visitor
   @Override
   public void visit(ast.exp.True e)
   {
+	  this.exp = new codegen.C.exp.Num(1);
+	  return;
   }
 
   // statements
   @Override
   public void visit(ast.stm.Assign s)
   {
-    s.exp.accept(this);
-    this.stm = new codegen.C.stm.Assign(s.id, this.exp);
+	String prefix = "";
+	if(!this.localVarList.contains(s.id))
+		prefix = "this->";  /* YKG. A bad solution! */
+    
+	s.exp.accept(this);
+    this.stm = new codegen.C.stm.Assign(prefix + s.id, this.exp);
     return;
   }
 
   @Override
   public void visit(ast.stm.AssignArray s)
   {
+	String prefix = "";
+	if(!this.localVarList.contains(s.id))
+		prefix = "this->";  /* YKG. A bad solution! */
+	
+	  s.exp.accept(this);
+	  codegen.C.exp.T exp = this.exp;
+	  s.index.accept(this);
+	  codegen.C.exp.T index = this.exp;
+	  this.stm = new codegen.C.stm.AssignArray(prefix + s.id, index, exp);
+	  return;
   }
 
   @Override
   public void visit(ast.stm.Block s)
   {
+	  java.util.LinkedList<codegen.C.stm.T> stmts = new java.util.LinkedList<codegen.C.stm.T>();
+	  for (ast.stm.T stm : s.stms){
+		  stm.accept(this);
+		  stmts.add(this.stm);
+	  }
+	  this.stm = new codegen.C.stm.Block(stmts);
+	  return;
   }
 
   @Override
@@ -206,17 +262,25 @@ public class TranslateVisitor implements ast.Visitor
   @Override
   public void visit(ast.stm.While s)
   {
+	  s.condition.accept(this);
+	  codegen.C.exp.T condition = this.exp;
+	  s.body.accept(this);
+	  codegen.C.stm.T body = this.stm;
+	  this.stm = new codegen.C.stm.While(condition, body);
+	  return;
   }
 
   // type
   @Override
   public void visit(ast.type.Boolean t)
   {
+	  this.type = new codegen.C.type.Int();
   }
 
   @Override
   public void visit(ast.type.Class t)
   {
+	  this.type = new codegen.C.type.Class(t.id);
   }
 
   @Override
@@ -228,6 +292,7 @@ public class TranslateVisitor implements ast.Visitor
   @Override
   public void visit(ast.type.IntArray t)
   {
+	  this.type = new codegen.C.type.IntArray();
   }
 
   // dec
@@ -243,6 +308,7 @@ public class TranslateVisitor implements ast.Visitor
   @Override
   public void visit(ast.method.Method m)
   {
+	this.localVarList.clear();
     this.tmpVars = new java.util.LinkedList<codegen.C.dec.T>();
     m.retType.accept(this);
     codegen.C.type.T newRetType = this.type;
@@ -252,11 +318,13 @@ public class TranslateVisitor implements ast.Visitor
     for (ast.dec.T d : m.formals) {
       d.accept(this);
       newFormals.add(this.dec);
+      this.localVarList.add(((ast.dec.Dec)d).id);
     }
     java.util.LinkedList<codegen.C.dec.T> locals = new java.util.LinkedList<codegen.C.dec.T>();
     for (ast.dec.T d : m.locals) {
       d.accept(this);
       locals.add(this.dec);
+      this.localVarList.add(((ast.dec.Dec)d).id);
     }
     java.util.LinkedList<codegen.C.stm.T> newStm = new java.util.LinkedList<codegen.C.stm.T>();
     for (ast.stm.T s : m.stms) {
@@ -386,9 +454,12 @@ public class TranslateVisitor implements ast.Visitor
   }
 
 @Override
-public void visit(Block e) {
+public void visit(ast.exp.Block e) {
 	// TODO Auto-generated method stub
 	///// YKGLAB3
-	System.err.println("HELP ME!!!");
+//	System.err.println("HELP ME!!!");
+	e.exp.accept(this);
+	this.exp = new codegen.C.exp.Block(this.exp);
+	return;
 }
 }

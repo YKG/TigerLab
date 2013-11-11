@@ -68,4 +68,6 @@ public interface Visitor
 
   // program
   public void visit(codegen.C.program.Program p);
+
+public void visit(codegen.C.exp.Block block);
 }
