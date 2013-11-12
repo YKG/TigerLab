@@ -4,3 +4,5 @@
 bin/
 .metadata/
 monster/Monster.java
+test/*.c
+test/*.exe

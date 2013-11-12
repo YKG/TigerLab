@@ -1,15 +1,16 @@
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 
 import lexer.Lexer;
 import lexer.Token;
 import lexer.Token.Kind;
-
+import parser.Parser;
+import sun.reflect.generics.tree.Tree;
 import control.CommandLine;
 import control.Control;
-
-import parser.Parser;
 
 public class Tiger
 {
@@ -161,7 +162,52 @@ public class Tiger
     // file, or call java to run the bytecode file,
     // or dalvik to run the dalvik bytecode.
     // Your code here:
-
+    
+    if(System.getProperty("os.name").toLowerCase().indexOf("win") < 0){
+    	System.err.println("Sorry! The following glue code works ONLY on Windows.");
+    	return;
+    }
+    
+    try{
+    	String exeFileName = fname.substring(0, fname.lastIndexOf('.')) + ".exe";
+    	String command = "gcc ../runtime/runtime.c " + fname+".c" + " -o " + exeFileName;
+//    	System.out.println("exec: " + command);
+    	Process p = Runtime.getRuntime().exec(new String[]{"cmd", "/c", command});
+    	p.waitFor();
+    	BufferedReader in = new BufferedReader(  
+                new InputStreamReader(p.getInputStream()));  
+		String line = null;  
+		while ((line = in.readLine()) != null) {
+			System.out.println(line);  
+		}
+		BufferedReader err = new BufferedReader(  
+                new InputStreamReader(p.getErrorStream()));  
+		line = null;  
+		while ((line = err.readLine()) != null) {
+			System.out.println(line);  
+		}
+		
+    	
+//    	System.out.println("exec: " + exeFileName);
+    	p = Runtime.getRuntime().exec(new String[]{"cmd", "/c", ".\\"+exeFileName});
+    	p.waitFor();
+    	in = new BufferedReader(  
+                new InputStreamReader(p.getInputStream()));  
+		line = null;
+		while ((line = in.readLine()) != null) {
+			System.out.println(line);  
+		}
+		err = new BufferedReader(  
+                new InputStreamReader(p.getErrorStream()));
+		line = null;
+		while ((line = err.readLine()) != null) {
+			System.out.println(line);  
+		}
+    }catch(Exception e){
+    	e.printStackTrace();
+    }
+    
+    
     return;
   }
 }

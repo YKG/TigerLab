@@ -110,9 +110,9 @@ public class PrettyPrintVisitor implements Visitor
   @Override
   public void visit(codegen.C.exp.Length e)
   {
-	  this.say("sizeof(");
+	  this.say("*(((int *)");
 	  e.array.accept(this);
-	  this.say(")");
+	  this.say(")-1)");
 	  return;
   }
 
@@ -128,9 +128,9 @@ public class PrettyPrintVisitor implements Visitor
   @Override
   public void visit(codegen.C.exp.NewIntArray e)
   {
-	  this.say("(int *)malloc(sizeof(int)*");
+	  this.say("((int *)(Tiger_new_array (");
 	  e.exp.accept(this);
-	  this.say(")");
+	  this.say(")))");
 	  return;
   }
 

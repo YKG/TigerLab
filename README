@@ -1,2 +1,5 @@
-Hello, Git!
-
+issue 0: 2013-11-12 15:24. Think about these two expressions:
+		id.length
+		id.length()
+	The problem is the second one won't pass the lexer phrase.	
+	If consider 'length' is a reserve word, dismiss this issue.
