@@ -15,7 +15,7 @@ public class ClassTable
   public void put(String c, ClassBinding cb)
   {
     if (this.table.get(c) != null) {
-      System.out.println("duplicated class: " + c);
+      System.err.println("duplicated class: " + c);
 //      System.exit(1);
     }else{
     	this.table.put(c, cb);

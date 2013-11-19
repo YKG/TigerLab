@@ -58,4 +58,23 @@ public interface Visitor
 
   // program
   public void visit(codegen.bytecode.program.Program p);
+
+  public void visit(Iadd s);
+
+public void visit(Iand s);
+
+public void visit(Ixor ixor);
+
+public void visit(Newarray newArray);
+
+public void visit(Iaload iaload);
+
+public void visit(Arraylength arraylength);
+
+public void visit(Iastore iastore);
+
+public void visit(Getfield getfield);
+
+public void visit(Putfield putfield);
+
 }

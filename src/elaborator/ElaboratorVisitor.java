@@ -21,13 +21,13 @@ public class ElaboratorVisitor implements ast.Visitor
   @SuppressWarnings("unused")
 private void error()
   {
-    System.out.println("type mismatch");
+    System.err.println("type mismatch");
 //    System.exit(1);
   }
 
   private void error(String msg)
   {
-	  System.out.println(msg);
+	  System.err.println(msg);
 //	  this.ok = false;
   }
   
@@ -35,28 +35,28 @@ private void error()
   private void error(ast.exp.T left, ast.exp.T right)
   {
     PrettyPrintVisitor pp = new PrettyPrintVisitor();
-    System.out.print("Line: " + left.lineNum + " : " + left.colNum + " : '");
+    System.err.print("Line: " + left.lineNum + " : " + left.colNum + " : '");
     left.accept(pp);
-    System.out.print("' and '");
+    System.err.print("' and '");
     left.accept(pp);
-    System.out.println("' must have the same type");
+    System.err.println("' must have the same type");
     this.ok = false;
 //    System.exit(1);
   }
   
   private void error(int lineNum, String id)
   {
-    System.out.println("Error: " + lineNum +": '" + id + "' was not declared");
+    System.err.println("Error: " + lineNum +": '" + id + "' was not declared");
     this.ok = false;
 //    System.exit(1);
   }
   
   private void error(ast.exp.T exp, String expType, String type)
   {
-    System.out.print("Error: " + exp.lineNum +": '");
+    System.err.print("Error: " + exp.lineNum +": '");
     PrettyPrintVisitor pp = new PrettyPrintVisitor();
     exp.accept(pp);
-    System.out.println("' is " + expType + ", but expect " + type);
+    System.err.println("' is " + expType + ", but expect " + type);
     this.ok = false;
 //    System.out.println("'" + "at line " + exp.lineNum + " col " + exp.colNum
 //    		+ " should be an " + type + " but its type is " + expType);
@@ -127,6 +127,7 @@ private void error()
 		    MethodType mty = this.classTable.getm(ty.id, e.id);
 		    if(mty != null){
 			    java.util.LinkedList<ast.type.T> argsty = new java.util.LinkedList<ast.type.T>();
+			    java.util.LinkedList<ast.type.T> formalsty = new java.util.LinkedList<ast.type.T>();
 			    java.util.LinkedList<Boolean> okList = new java.util.LinkedList<Boolean>();
 			    for (ast.exp.T a : e.args) {
 			      a.accept(this);
@@ -138,6 +139,7 @@ private void error()
 			    }else{
 				    for (int i = 0; i < argsty.size(); i++) {
 				      ast.dec.Dec dec = (ast.dec.Dec) mty.argsType.get(i);
+				      formalsty.add(dec.type);
 				      Boolean b = okList.get(i);
 				      if(b.booleanValue() && dec.type != null){
 				    	  if (dec.type.toString().equals(argsty.get(i).toString()))
@@ -153,7 +155,8 @@ private void error()
 				      }
 				    }
 				    this.type = mty.retType;
-				    e.at = argsty;
+				    //e.at = argsty;
+				    e.at = formalsty; // YKG. Added when I am doing Lab3B
 				    e.rt = this.type;
 				    return;
 			    }
@@ -340,7 +343,8 @@ private void error()
     if(this.type != null && type != null 
     		&& !this.type.toString().equals(type.toString()))
     	error(s.exp, this.type.toString(), type.toString());
-//    s.type = type;
+    else
+    	s.type = type; // YKG. Added when I am doing the Lab3B
     return;
   }
 
@@ -353,6 +357,7 @@ private void error()
 	    // if search failed, then s.id must
 	    if (type == null){
 	      type = this.classTable.get(this.currentClass, s.id);
+	      s.type = type; /* YKG. It should be always int[] or null */
 		}else{
 		  isMethodField = true;
 		}
@@ -473,7 +478,7 @@ private void error()
     this.methodTable.printWarning(); /* YKG. SHOULD NOT BE after the next line */
     m.retExp.accept(this);
     if(this.ok && !this.type.toString().equals(m.retType.toString())){
-    	System.out.println("Error: " + m.retExp.lineNum + ": Type mismatch: "
+    	System.err.println("Error: " + m.retExp.lineNum + ": Type mismatch: "
     			+ "cannot convert from " + this.type.toString() 
     			+" to " + m.retType.toString());
     }
@@ -494,7 +499,7 @@ private void error()
 	while(father != null){
 //		System.out.println("Trace: " + c.id +" extends: " + father);
 		if(father.equals(c.id)){
-			System.out.println("Error: circular inheritance class: " + c.id);
+			System.err.println("Error: circular inheritance class: " + c.id);
 			break;
 		}
 		father = this.classTable.get(father).extendss;
@@ -509,10 +514,11 @@ private void error()
       if(d.type instanceof ast.type.Class){
     	 String cname = ((ast.type.Class)(d.type)).id;
     	 if(this.classTable.get(cname) == null){
-    		 System.out.println("Error: " + dec.lineNum + ": unknown type '" +  cname + "'");
+    		 System.err.println("Error: " + dec.lineNum + ": unknown type '" +  cname + "'");
     		 /* YKG. Remember to mark the error */
     	 }
       }
+      ((ast.dec.Dec)dec).isField = true; // YKG. Added when I am doing Lab3B
 	}
 	    
 //System.out.println("Class: " + this.currentClass);

@@ -18,7 +18,7 @@ public class MethodTable
     for (ast.dec.T dec : formals) {
       ast.dec.Dec decc = (ast.dec.Dec) dec;
       if (this.table.get(decc.id) != null) {
-        System.out.println("duplicated parameter: " + decc.id);
+        System.err.println("duplicated parameter: " + decc.id);
         System.exit(1);
       }
       this.table.put(decc.id, decc.type);
@@ -27,7 +27,7 @@ public class MethodTable
     for (ast.dec.T dec : locals) {
       ast.dec.Dec decc = (ast.dec.Dec) dec;
       if (this.table.get(decc.id) != null) {
-        System.out.println("duplicated variable: " + decc.id);
+        System.err.println("duplicated variable: " + decc.id);
         System.exit(1);
       }
       this.table.put(decc.id, decc.type);
@@ -42,14 +42,14 @@ public class MethodTable
     for (ast.dec.T dec : formals) {
       ast.dec.Dec decc = (ast.dec.Dec) dec;
       if (this.table.get(decc.id) != null) {
-        System.out.println("duplicated parameter: " + decc.id);
+        System.err.println("duplicated parameter: " + decc.id);
 //        System.exit(1);
       }else{
           ast.dec.Dec d = decc;
           if(d.type instanceof ast.type.Class){
         	 String cname = ((ast.type.Class)(d.type)).id;
         	 if(ref.get(cname) == null){
-        		 System.out.println("Error: " + dec.lineNum + ": unknown type '" +  cname + "'");
+        		 System.err.println("Error: " + dec.lineNum + ": unknown type '" +  cname + "'");
         		 /* YKG. Remember to mark the error */
 //        		 this.table.put(decc.id, null);
 //        	 }else{
@@ -65,14 +65,14 @@ public class MethodTable
     for (ast.dec.T dec : locals) {
       ast.dec.Dec decc = (ast.dec.Dec) dec;
       if (this.table.get(decc.id) != null) {
-        System.out.println("duplicated variable: " + decc.id);
+        System.err.println("duplicated variable: " + decc.id);
 //        System.exit(1);
       }else{
     	  ast.dec.Dec d = decc;
           if(d.type instanceof ast.type.Class){
         	 String cname = ((ast.type.Class)(d.type)).id;
         	 if(ref.get(cname) == null){
-        		 System.out.println("Error: " + dec.lineNum + ": unknown type '" +  cname + "'");
+        		 System.err.println("Error: " + dec.lineNum + ": unknown type '" +  cname + "'");
         		 /* YKG. Remember to mark the error */
         	 }
           }
@@ -125,7 +125,7 @@ System.out.println("=============== MethodTable dump end ===========");
 	  java.util.Enumeration<String> keys = this.tableLocalVar.keys();
 	  while(keys.hasMoreElements()){
 		  key = keys.nextElement();
-		  System.out.println("Warning: variable \"" + key + "\" declared at line " 
+		  System.err.println("Warning: variable \"" + key + "\" declared at line " 
 				  + this.tableLocalVar.get(key).lineNum + " never used");
 	  }
   }

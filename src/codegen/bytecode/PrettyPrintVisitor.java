@@ -1,5 +1,16 @@
 package codegen.bytecode;
 
+import codegen.bytecode.stm.Arraylength;
+import codegen.bytecode.stm.Getfield;
+import codegen.bytecode.stm.Iadd;
+import codegen.bytecode.stm.Iaload;
+import codegen.bytecode.stm.Iand;
+import codegen.bytecode.stm.Iastore;
+import codegen.bytecode.stm.Ixor;
+import codegen.bytecode.stm.Newarray;
+import codegen.bytecode.stm.Putfield;
+
+
 public class PrettyPrintVisitor implements Visitor
 {
   private java.io.BufferedWriter writer;
@@ -30,7 +41,11 @@ public class PrettyPrintVisitor implements Visitor
       System.exit(1);
     }
   }
-
+  private void isay(String s)
+  {
+    say("    ");
+    say(s);
+  }
   private void say(String s)
   {
     try {
@@ -238,7 +253,7 @@ public class PrettyPrintVisitor implements Visitor
     // fields
     for (codegen.bytecode.dec.T d : c.decs) {
       codegen.bytecode.dec.Dec dd = (codegen.bytecode.dec.Dec) d;
-      this.say(".field public " + dd.id);
+      this.say(".field public " + dd.id + " ");
       dd.type.accept(this);
       this.sayln("");
     }
@@ -313,5 +328,57 @@ public class PrettyPrintVisitor implements Visitor
     }
 
   }
+
+@Override
+public void visit(Iadd s) {
+	this.isayln("iadd");
+}
+
+@Override
+public void visit(Iand s) {
+	this.isayln("iand");
+}
+
+@Override
+public void visit(Ixor ixor) {
+	this.isayln("ixor");
+}
+
+@Override
+public void visit(Newarray newArray) {
+	this.isayln("newarray int"); // YKG. int[] ONLY
+}
+
+@Override
+public void visit(Iaload iaload) {
+	this.isayln("iaload");
+}
+
+@Override
+public void visit(Arraylength arraylength) {
+	this.isayln("arraylength");
+}
+
+@Override
+public void visit(Iastore iastore) {
+	this.isayln("iastore");
+}
+
+@Override
+public void visit(Getfield field) {
+	this.isayln("aload 0");
+	this.isay("getfield " + field.className + "/" + field.fieldName + " ");
+	field.type.accept(this);
+	this.sayln("");
+}
+
+@Override
+public void visit(Putfield field) {
+	this.isayln("aload 0");
+	this.isayln("swap");
+	this.isay("putfield " + field.className + "/" + field.fieldName + " ");
+	field.type.accept(this);
+	this.sayln("");
+}
 
 }

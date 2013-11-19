@@ -3,6 +3,7 @@ package ast.stm;
 public class AssignArray extends T
 {
   public String id;
+  public ast.type.T type; // type of id
   public ast.exp.T index;
   public ast.exp.T exp;
 

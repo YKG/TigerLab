@@ -3,7 +3,6 @@ package codegen.bytecode;
 import java.util.Hashtable;
 import java.util.LinkedList;
 
-import ast.exp.Block;
 import util.Label;
 
 // Given a Java ast, translate it into Java bytecode.
@@ -11,6 +10,7 @@ import util.Label;
 public class TranslateVisitor implements ast.Visitor
 {
   private String classId;
+  private Hashtable<String, codegen.bytecode.dec.T> filedsTable; // YKG. field.
   private int index;
   private Hashtable<String, Integer> indexTable;
   private codegen.bytecode.type.T type; // type after translation
@@ -44,16 +44,28 @@ public class TranslateVisitor implements ast.Visitor
   @Override
   public void visit(ast.exp.Add e)
   {
+    e.left.accept(this);
+    e.right.accept(this);
+    emit(new codegen.bytecode.stm.Iadd());
+    return;
   }
 
   @Override
   public void visit(ast.exp.And e)
   {
+    e.left.accept(this);
+    e.right.accept(this);
+    emit(new codegen.bytecode.stm.Iand());
+    return;	  
   }
 
   @Override
   public void visit(ast.exp.ArraySelect e)
   {
+	  e.array.accept(this);
+	  e.index.accept(this);
+	  emit(new codegen.bytecode.stm.Iaload());
+	  return;	  	  
   }
 
   @Override
@@ -77,11 +89,20 @@ public class TranslateVisitor implements ast.Visitor
   @Override
   public void visit(ast.exp.False e)
   {
+	  emit(new codegen.bytecode.stm.Ldc(0));
+	  return;
   }
 
   @Override
   public void visit(ast.exp.Id e)
   {
+	// YKG. field.
+	if(this.indexTable.get(e.id) == null){
+	  e.type.accept(this);
+	  emit(new codegen.bytecode.stm.Getfield(this.classId, e.id, this.type));
+	  return;
+	}
+	
     int index = this.indexTable.get(e.id);
     ast.type.T type = e.type;
     if (type.getNum() > 0)// a reference
@@ -95,6 +116,9 @@ public class TranslateVisitor implements ast.Visitor
   @Override
   public void visit(ast.exp.Length e)
   {
+	  e.array.accept(this);
+	  emit(new codegen.bytecode.stm.Arraylength());
+	  return;
   }
 
   @Override
@@ -117,6 +141,9 @@ public class TranslateVisitor implements ast.Visitor
   @Override
   public void visit(ast.exp.NewIntArray e)
   {
+	  e.exp.accept(this);
+	  emit(new codegen.bytecode.stm.Newarray()); // YKG. int ONLY
+	  return;
   }
 
   @Override
@@ -129,6 +156,10 @@ public class TranslateVisitor implements ast.Visitor
   @Override
   public void visit(ast.exp.Not e)
   {
+	  e.exp.accept(this);
+	  emit(new codegen.bytecode.stm.Ldc(1));
+	  emit(new codegen.bytecode.stm.Ixor()); // YKG. !e == e^1
+	  return;
   }
 
   @Override
@@ -166,6 +197,8 @@ public class TranslateVisitor implements ast.Visitor
   @Override
   public void visit(ast.exp.True e)
   {
+	  emit(new codegen.bytecode.stm.Ldc(1));
+	  return;
   }
 
   // statements
@@ -173,6 +206,14 @@ public class TranslateVisitor implements ast.Visitor
   public void visit(ast.stm.Assign s)
   {
     s.exp.accept(this);
+	
+    // YKG. field.
+	if(this.indexTable.get(s.id) == null){
+	  s.type.accept(this);
+	  emit(new codegen.bytecode.stm.Putfield(this.classId, s.id, this.type));
+	  return;
+	}
+	
     int index = this.indexTable.get(s.id);
     ast.type.T type = s.type;
     if (type.getNum() > 0)
@@ -186,11 +227,29 @@ public class TranslateVisitor implements ast.Visitor
   @Override
   public void visit(ast.stm.AssignArray s)
   {
+    // YKG. field.
+	if(this.indexTable.get(s.id) == null){
+	  s.type.accept(this);
+	  emit(new codegen.bytecode.stm.Getfield(this.classId, s.id, this.type));
+	}else{
+	  int index = this.indexTable.get(s.id);
+	  emit(new codegen.bytecode.stm.Aload(index));		
+	}
+
+	  s.index.accept(this);
+	  s.exp.accept(this);
+	  emit(new codegen.bytecode.stm.Iastore());
+	  return;
   }
 
   @Override
   public void visit(ast.stm.Block s)
   {
+	  java.util.LinkedList<ast.stm.T> stms = s.stms;
+	  for(ast.stm.T stm : stms){
+		  stm.accept(this);
+	  }
+	  return;
   }
 
   @Override
@@ -220,17 +279,29 @@ public class TranslateVisitor implements ast.Visitor
   @Override
   public void visit(ast.stm.While s)
   {
+    Label tl = new Label(), nl = new Label(), el = new Label();
+    emit(new codegen.bytecode.stm.Label(nl));
+    s.condition.accept(this);
+    emit(new codegen.bytecode.stm.Ifne(tl));
+    emit(new codegen.bytecode.stm.Goto(el));
+    emit(new codegen.bytecode.stm.Label(tl));
+    s.body.accept(this);
+    emit(new codegen.bytecode.stm.Goto(nl));
+    emit(new codegen.bytecode.stm.Label(el));
+    return;	  
   }
 
   // type
   @Override
   public void visit(ast.type.Boolean t)
   {
+	this.type = new codegen.bytecode.type.Int(); // YKG. ref to visit(exp.Lt). Elab?
   }
 
   @Override
   public void visit(ast.type.Class t)
   {
+	this.type = new codegen.bytecode.type.Class(t.id);
   }
 
   @Override
@@ -242,6 +313,7 @@ public class TranslateVisitor implements ast.Visitor
   @Override
   public void visit(ast.type.IntArray t)
   {
+	this.type = new codegen.bytecode.type.IntArray();
   }
 
   // dec
@@ -249,8 +321,10 @@ public class TranslateVisitor implements ast.Visitor
   public void visit(ast.dec.Dec d)
   {
     d.type.accept(this);
-    this.dec = new codegen.bytecode.dec.Dec(this.type, d.id);
-    this.indexTable.put(d.id, index++);
+    this.dec = new codegen.bytecode.dec.Dec(this.type, d.id, d.isField);
+    if(!d.isField){
+    	this.indexTable.put(d.id, index++);	
+    }
     return;
   }
 
@@ -300,9 +374,11 @@ public class TranslateVisitor implements ast.Visitor
   {
     this.classId = c.id;
     java.util.LinkedList<codegen.bytecode.dec.T> newDecs = new java.util.LinkedList<codegen.bytecode.dec.T>();
+    this.filedsTable = new java.util.Hashtable<String, codegen.bytecode.dec.T>(); // YKG. field.
     for (ast.dec.T dec : c.decs) {
       dec.accept(this);
       newDecs.add(this.dec);
+      this.filedsTable.put(((ast.dec.Dec)dec).id, this.dec);	// YKG. field.
     }
     java.util.LinkedList<codegen.bytecode.method.T> newMethods = new java.util.LinkedList<codegen.bytecode.method.T>();
     for (ast.method.T m : c.methods) {
@@ -343,8 +419,10 @@ public class TranslateVisitor implements ast.Visitor
   }
 
 @Override
-public void visit(Block e) {
+public void visit(ast.exp.Block e) {
 	// TODO Auto-generated method stub
-	System.err.println("HELP ME!bytecode");
+	//System.err.println("HELP ME!bytecode");
+	e.exp.accept(this);
+	return;
 }
 }

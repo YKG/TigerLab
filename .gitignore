@@ -6,3 +6,4 @@ bin/
 monster/Monster.java
 test/*.c
 test/*.exe
+test/*.j

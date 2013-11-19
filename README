@@ -1,3 +1,8 @@
+Test Lab 3
+	For part A: test/test-c-gen-fc.bat
+	For part B: test/test-bytecode-gen-fc.bat
+
+
 issue 0: 2013-11-12 15:24. Think about these two expressions:
 		id.length
 		id.length()
