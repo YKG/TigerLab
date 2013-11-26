@@ -13,6 +13,12 @@ public class NewIntArray extends T
   {
     this.exp = exp;
   }
+  public NewIntArray(T exp, String name)
+  {
+    this.exp = exp;
+    this.name = name;
+  }
+  
 
   @Override
   public void accept(Visitor v)

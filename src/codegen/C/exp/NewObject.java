@@ -13,7 +13,13 @@ public class NewObject extends T
   {
     this.id = id;
   }
-
+  
+  public NewObject(String id, String name)
+  {
+    this.id = id;
+    this.name = name;
+  }
+  
   @Override
   public void accept(Visitor v)
   {

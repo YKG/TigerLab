@@ -1,5 +1,7 @@
 package codegen.C;
 
+import codegen.C.type.IntArray;
+
 
 // Given a Java ast, translate it into a C ast and outputs it.
 
@@ -135,15 +137,24 @@ public class TranslateVisitor implements ast.Visitor
   @Override
   public void visit(ast.exp.NewIntArray e)
   {
+	  String newid = this.genId();
+	  this.tmpVars.add(new codegen.C.dec.Dec(new codegen.C.type.IntArray(),
+	        newid));
 	  e.exp.accept(this);
-	  this.exp = new codegen.C.exp.NewIntArray(this.exp);
+	  this.exp = new codegen.C.exp.NewIntArray(this.exp, newid);
 	  return;
   }
 
+  /* YKG. I don't think it's not a problem in MiniJava, since all the new objects
+   * will be assigned to some pointer. But the problem does exists in NewIntArray.
+   * */
   @Override
   public void visit(ast.exp.NewObject e)
   {
-    this.exp = new codegen.C.exp.NewObject(e.id);
+	String newid = this.genId();
+    this.tmpVars.add(new codegen.C.dec.Dec(new codegen.C.type.Class(e.id),
+            newid));
+    this.exp = new codegen.C.exp.NewObject(e.id, newid);
     return;
   }
 

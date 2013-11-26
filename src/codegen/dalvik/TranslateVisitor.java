@@ -2,6 +2,7 @@ package codegen.dalvik;
 
 import java.util.LinkedList;
 
+import ast.exp.Block;
 import util.Label;
 import util.Temp;
 
@@ -391,4 +392,9 @@ public class TranslateVisitor implements ast.Visitor
         newClasses);
     return;
   }
+@Override
+public void visit(Block e) {
+	// TODO Auto-generated method stub
+	System.err.println("Fix Me! dalvik TranslateVisitor.java");
+}
 }

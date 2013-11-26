@@ -128,17 +128,17 @@ public class PrettyPrintVisitor implements Visitor
   @Override
   public void visit(codegen.C.exp.NewIntArray e)
   {
-	  this.say("((int *)(Tiger_new_array (");
+	  this.say("(" + e.name + " = (int *)(Tiger_new_array (");
 	  e.exp.accept(this);
-	  this.say(")))");
+	  this.say(")), " + e.name + ")");
 	  return;
   }
 
   @Override
   public void visit(codegen.C.exp.NewObject e)
   {
-    this.say("((struct " + e.id + "*)(Tiger_new (&" + e.id
-        + "_vtable_, sizeof(struct " + e.id + "))))");
+    this.say("(" + e.name + " = (struct " + e.id + "*)(Tiger_new (&" + e.id
+        + "_vtable_, sizeof(struct " + e.id + "))), " + e.name + ")");
     return;
   }
 
