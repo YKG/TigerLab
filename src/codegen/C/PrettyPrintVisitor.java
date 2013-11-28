@@ -1,5 +1,7 @@
 package codegen.C;
 
+import java.util.LinkedHashSet;
+
 import codegen.C.exp.Block;
 import control.Control;
 
@@ -7,6 +9,8 @@ public class PrettyPrintVisitor implements Visitor
 {
   private int indentLevel;
   private java.io.BufferedWriter writer;
+  private java.util.LinkedHashSet<String> localRefs;
+  private String methodId;
 
   // //////////////////////////////////////////////////////
   // 
@@ -92,6 +96,10 @@ public class PrettyPrintVisitor implements Visitor
   @Override
   public void visit(codegen.C.exp.Call e)
   {
+	if(this.localRefs.contains(e.assign)){
+		e.assign = "__GC_frame." + e.assign;
+	}
+		
     this.say("(" + e.assign + "=");
     e.exp.accept(this);
     this.say(", ");
@@ -112,6 +120,10 @@ public class PrettyPrintVisitor implements Visitor
   @Override
   public void visit(codegen.C.exp.Id e)
   {
+	if(this.localRefs.contains(e.id)){
+		e.id = "__GC_frame." + e.id;
+	}
+	
     this.say(e.id);
   }
 
@@ -136,6 +148,10 @@ public class PrettyPrintVisitor implements Visitor
   @Override
   public void visit(codegen.C.exp.NewIntArray e)
   {
+	if(this.localRefs.contains(e.name)){
+		e.name = "__GC_frame." + e.name;
+	}
+	
 	  this.say("(" + e.name + " = (int *)(Tiger_new_array (");
 	  e.exp.accept(this);
 	  this.say(")), " + e.name + ")");
@@ -145,6 +161,12 @@ public class PrettyPrintVisitor implements Visitor
   @Override
   public void visit(codegen.C.exp.NewObject e)
   {
+	if(this.localRefs.contains(e.name)){
+		e.name = "__GC_frame." + e.name;
+	}
+	if(this.localRefs.contains(e.id)){
+		e.id = "__GC_frame." + e.id;		/* YKG. Is it reachable? */
+	}
     this.say("(" + e.name + " = (struct " + e.id + "*)(Tiger_new (&" + e.id
         + "_vtable_, sizeof(struct " + e.id + "))), " + e.name + ")");
     return;
@@ -193,6 +215,10 @@ public class PrettyPrintVisitor implements Visitor
   @Override
   public void visit(codegen.C.stm.Assign s)
   {
+	if(this.localRefs.contains(s.id)){
+		s.id = "__GC_frame." + s.id;
+	}
+		
     this.printSpaces();
     this.say(s.id + " = ");
     s.exp.accept(this);
@@ -203,6 +229,10 @@ public class PrettyPrintVisitor implements Visitor
   @Override
   public void visit(codegen.C.stm.AssignArray s)
   {
+		if(this.localRefs.contains(s.id)){
+			s.id = "__GC_frame." + s.id;
+		}
+
 	  this.printSpaces();
 	  this.say(s.id + "[");
 	  s.index.accept(this);
@@ -312,6 +342,8 @@ public class PrettyPrintVisitor implements Visitor
   @Override
   public void visit(codegen.C.method.Method m)
   {
+	this.methodId = this.genId();
+	this.localRefs.clear();	
 	// arguments_gc_map
     String arguments_gc_map = "";
     for (codegen.C.dec.T d : m.formals) {
@@ -321,20 +353,36 @@ public class PrettyPrintVisitor implements Visitor
     		arguments_gc_map += "1";
     	}
     }
-    String locals_gc_map  = "";
+    String locals_gc_map  = "";    
     for (codegen.C.dec.T d : m.locals) {
-    	if(((codegen.C.dec.Dec) d).type instanceof codegen.C.type.Int){
+    	codegen.C.dec.Dec dec = (codegen.C.dec.Dec) d;
+    	if(dec.type instanceof codegen.C.type.Int){
     		locals_gc_map += "0"; 
     	}else{ // int [], Class/Struct
     		locals_gc_map += "1";
+    		this.localRefs.add(dec.id);
+    		
     	}
     }
-    String methodId = this.genId();
-    this.say("char *" + methodId + "_");
-    this.sayln("args_gc_map = \"" + arguments_gc_map + "\";");
-    this.say("char *" + methodId + "_");
-    this.sayln("locals_gc_map = \"" + locals_gc_map + "\";");
+    this.sayln("char *" + this.methodId + "_args_gc_map = \"" + arguments_gc_map + "\";");
+    this.sayln("char *" + this.methodId + "_locals_gc_map = \"" + locals_gc_map + "\";");
     
+    // struct f_gc_frame
+    this.sayln("struct " + this.methodId +"_gc_frame{");
+    this.sayln("  void *prev;                      // dynamic chain, pointing to f's caller's GC frame");
+    this.sayln("  char *arguments_gc_map;         // should be assigned the value of \"f_arguments_gc_map\"");
+    this.sayln("  int *arguments_base_address;    // address of the first argument");
+    this.sayln("  char *locals_gc_map;            // should be assigned the value of \"f_locals_gc_map\"");
+    this.sayln("  int localRefCount;");
+    for (codegen.C.dec.T d : m.locals) {
+        codegen.C.dec.Dec dec = (codegen.C.dec.Dec) d;
+        if(this.localRefs.contains(dec.id)){
+	        this.say("  ");
+	        dec.type.accept(this);
+	        this.say(" " + dec.id + ";\n");
+        }
+    }    
+    this.sayln("};");
     
     m.retType.accept(this);    
     this.say(" " + m.classId + "_" + m.id + "(");
@@ -350,13 +398,29 @@ public class PrettyPrintVisitor implements Visitor
     this.sayln(")");
     this.sayln("{");
 
+    // init __GC_frame. /* YKG. Yeah, this variable name may be conflict with other variables, because of the NAME. */
+    this.sayln("  // put the GC stack frame onto the call stack");
+    this.sayln("  // note that this frame contains the three original locals in f");
+    this.sayln("  struct " + this.methodId + "_gc_frame __GC_frame;  ");
+    
     for (codegen.C.dec.T d : m.locals) {
       codegen.C.dec.Dec dec = (codegen.C.dec.Dec) d;
-      this.say("  ");
-      dec.type.accept(this);
-      this.say(" " + dec.id + ";\n");
+      if(!this.localRefs.contains(dec.id)){
+	      this.say("  ");
+	      dec.type.accept(this);
+	      this.say(" " + dec.id + ";\n");
+      }
     }
     this.sayln("");
+    
+    this.sayln("  __GC_frame.prev = prev;");
+    this.sayln("  prev = &__GC_frame; ");
+    this.sayln("  __GC_frame.arguments_gc_map = " + this.methodId + "_args_gc_map;");
+    this.sayln("  __GC_frame.arguments_base_address = &this;");
+    this.sayln("  __GC_frame.locals_gc_map = " + this.methodId + "_locals_gc_map;");
+    this.sayln("  __GC_frame.localRefCount = " + this.localRefs.size() + ";");
+    this.sayln("");
+    
     for (codegen.C.stm.T s : m.stms)
       s.accept(this);
     this.say("  return ");
@@ -389,6 +453,7 @@ public class PrettyPrintVisitor implements Visitor
   {
     this.sayln("struct " + v.id + "_vtable");
     this.sayln("{");
+    this.sayln("  char * " + v.id + "_gc_map;");
     for (codegen.C.Ftuple t : v.ms) {
       this.say("  ");
       t.ret.accept(this);
@@ -449,6 +514,7 @@ public class PrettyPrintVisitor implements Visitor
       e.printStackTrace();
       System.exit(1);
     }
+    this.localRefs = new java.util.LinkedHashSet<String>(); /* YKG. Prevent potential NULL Pointer Exception. */
 
     this.sayln("// This is automatically generated by the Tiger compiler.");
     this.sayln("// Do NOT modify!\n");
@@ -467,8 +533,9 @@ public class PrettyPrintVisitor implements Visitor
       v.accept(this);
     }
     this.sayln("");
-
+    
     this.sayln("// methods");
+    this.sayln("void * prev;");
     for (codegen.C.method.T m : p.methods) {
       m.accept(this);
     }
