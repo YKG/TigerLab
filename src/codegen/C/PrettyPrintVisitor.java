@@ -8,6 +8,14 @@ public class PrettyPrintVisitor implements Visitor
   private int indentLevel;
   private java.io.BufferedWriter writer;
 
+  // //////////////////////////////////////////////////////
+  // 
+  public String genId()
+  {
+    return util.Temp.next();
+  }
+////////////////////////////////////////////////////////
+  
   public PrettyPrintVisitor()
   {
     this.indentLevel = 2;
@@ -293,11 +301,42 @@ public class PrettyPrintVisitor implements Visitor
 	  return;
   }
 
+  /*
+   * YKG. The longest length of a variable name in C is 31 characters.
+   * I use util.Temp, does the int ranges sufficient?
+   * 
+   * (non-Javadoc)
+   * @see codegen.C.Visitor#visit(codegen.C.method.Method)
+   */
   // method
   @Override
   public void visit(codegen.C.method.Method m)
   {
-    m.retType.accept(this);
+	// arguments_gc_map
+    String arguments_gc_map = "";
+    for (codegen.C.dec.T d : m.formals) {
+    	if(((codegen.C.dec.Dec) d).type instanceof codegen.C.type.Int){
+    		arguments_gc_map += "0"; 
+    	}else{ // int [], Class/Struct
+    		arguments_gc_map += "1";
+    	}
+    }
+    String locals_gc_map  = "";
+    for (codegen.C.dec.T d : m.locals) {
+    	if(((codegen.C.dec.Dec) d).type instanceof codegen.C.type.Int){
+    		locals_gc_map += "0"; 
+    	}else{ // int [], Class/Struct
+    		locals_gc_map += "1";
+    	}
+    }
+    String methodId = this.genId();
+    this.say("char *" + methodId + "_");
+    this.sayln("args_gc_map = \"" + arguments_gc_map + "\";");
+    this.say("char *" + methodId + "_");
+    this.sayln("locals_gc_map = \"" + locals_gc_map + "\";");
+    
+    
+    m.retType.accept(this);    
     this.say(" " + m.classId + "_" + m.id + "(");
     int size = m.formals.size();
     for (codegen.C.dec.T d : m.formals) {

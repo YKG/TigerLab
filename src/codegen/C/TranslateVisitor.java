@@ -1,7 +1,5 @@
 package codegen.C;
 
-import codegen.C.type.IntArray;
-
 
 // Given a Java ast, translate it into a C ast and outputs it.
 
