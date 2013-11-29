@@ -36,19 +36,30 @@ void Tiger_heap_init (int heapSize)
 {
   // You should write 7 statement here:
   // #1: allocate a chunk of memory of size "heapSize" using "malloc"
+	char * ptr = (char *)malloc(heapSize);
+	if(ptr == NULL){
+		fprintf(stderr, "ERROR: malloc() failed!\n");
+		exit(1);
+	}
 
   // #2: initialize the "size" field, note that "size" field
   // is for semi-heap, but "heapSize" is for the whole heap.
+	heap.size = heapSize / 2;
 
   // #3: initialize the "from" field (with what value?)
+	heap.from = ptr;
 
   // #4: initialize the "fromFree" field (with what value?)
+	heap.from = ptr;
 
   // #5: initialize the "to" field (with what value?)
+	heap.to = ptr + heap.size;
 
   // #6: initizlize the "toStart" field with NULL;
+	heap.toStart = NULL;
 
   // #7: initialize the "toNext" field with NULL;
+	heap.toNext = NULL;
 
   return;
 }
@@ -112,6 +123,25 @@ void *Tiger_new (void *vtable, int size)
   // *((int **)obj) = (int *)vtable;  /* YKG. Consider the vptr is the first field of the struct. */
   // // #4: return the pointer
   // return obj;
+
+   // You should write 4 statements for this function.
+   // #1: "malloc" a chunk of memory of size "size":
+   void * obj = malloc(size);
+   if(obj < 0){
+	   fprintf(stderr, "ERROR: malloc() failed!\n");
+	   exit(1);
+   }
+   // #2: clear this chunk of memory (zero off it):
+   memset(obj, 0, size);
+
+   // #3: set up the "vtable" pointer properly:
+   *((int **)obj) = (int *)vtable;  /* YKG. Consider the vptr is the first field of the struct. */
+
+   // #3.5 other fields
+   *((int *)obj + 1) = 0;		/* isObjOrArray = 0; */
+
+   // #4: return the pointer
+   return obj;
 }
 
 // "new" an array of size "length", do necessary
@@ -161,7 +191,23 @@ void *Tiger_new_array (int length)
   // memset(arr, 0, (length + 1) * sizeof(int));
   // *((int *)arr) = length;
   // return (void *)(((int *)arr) + 1);
-  
+
+   // You can use the C "malloc" facilities, as above.
+   // Your code here:
+   int * arr = (int *)malloc((length + 4) * sizeof(int));
+   if(arr < 0){
+	   fprintf(stderr, "ERROR: malloc() failed!\n");
+	   exit(1);
+   }
+   // #2: clear this chunk of memory (zero off it):
+   memset(arr, 0, (length + 4) * sizeof(int));
+
+   arr[0] = 0;	/* vptr = NULL; */
+   arr[1] = 1;	/* isObjOrArray = 1 */
+   arr[2] = length;
+   arr[3] = 0;  /* forwarding = NULL; */
+
+   return (void *)arr;
 }
 
 //===============================================================//

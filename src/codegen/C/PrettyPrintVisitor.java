@@ -90,7 +90,7 @@ public class PrettyPrintVisitor implements Visitor
 	  e.array.accept(this);
 	  this.say("[");
 	  e.index.accept(this);
-	  this.say("]");
+	  this.say(" + 4]");
 	  return;
   }
 
@@ -133,7 +133,7 @@ public class PrettyPrintVisitor implements Visitor
   {
 	  this.say("*(((int *)");
 	  e.array.accept(this);
-	  this.say(")-1)");
+	  this.say(")+2)");
 	  return;
   }
 
@@ -237,7 +237,7 @@ public class PrettyPrintVisitor implements Visitor
 	  this.printSpaces();
 	  this.say(s.id + "[");
 	  s.index.accept(this);
-	  this.say("] = ");
+	  this.say(" + 4] = ");
 	  s.exp.accept(this);
 	  this.sayln(";");
 	  return;
@@ -370,7 +370,7 @@ public class PrettyPrintVisitor implements Visitor
     
     // struct f_gc_frame
     this.sayln("struct " + this.methodId +"_gc_frame{");
-    this.sayln("  void *prev;                      // dynamic chain, pointing to f's caller's GC frame");
+    this.sayln("  void *__gc_prev;                      // dynamic chain, pointing to f's caller's GC frame");
     this.sayln("  char *arguments_gc_map;         // should be assigned the value of \"f_arguments_gc_map\"");
     this.sayln("  int *arguments_base_address;    // address of the first argument");
     this.sayln("  char *locals_gc_map;            // should be assigned the value of \"f_locals_gc_map\"");
@@ -414,7 +414,7 @@ public class PrettyPrintVisitor implements Visitor
     }
     this.sayln("");
     
-    this.sayln("  __GC_frame.prev = prev;");
+    this.sayln("  __GC_frame.__gc_prev = prev;");
     this.sayln("  prev = &__GC_frame; ");
     this.sayln("  __GC_frame.arguments_gc_map = " + this.methodId + "_args_gc_map;");
     this.sayln("  __GC_frame.arguments_base_address = (int *)&this;");
@@ -489,6 +489,9 @@ public class PrettyPrintVisitor implements Visitor
     this.sayln("struct " + c.id);
     this.sayln("{");
     this.sayln("  struct " + c.id + "_vtable *vptr;");
+    this.sayln("  int isObjOrArray;");
+    this.sayln("  int length;");
+    this.sayln("  char * forwarding;");
     for (codegen.C.Tuple t : c.decs) {
       this.say("  ");
       t.type.accept(this);
@@ -549,7 +552,7 @@ public class PrettyPrintVisitor implements Visitor
     this.sayln("");
     
     this.sayln("// methods");
-    this.sayln("void * prev;");
+    this.sayln("extern void * prev;");
     for (codegen.C.method.T m : p.methods) {
       m.accept(this);
     }
