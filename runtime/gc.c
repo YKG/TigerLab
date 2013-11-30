@@ -79,7 +79,7 @@ void dump_heap()
   fprintf(stderr, "%8x heap.to \n", heap.to);
   fprintf(stderr, "%8x heap.toStart \n", heap.toStart);
   fprintf(stderr, "%8x heap.toNext \n", heap.toNext);
-  fprintf(stderr, "%8x ::: heap.usedFrom \n", heap.fromFree - heap.from);
+  fprintf(stderr, "%8x %d::: heap.usedFrom \n", heap.fromFree - heap.from, heap.fromFree - heap.from);
   fprintf(stderr, "%8x ::: heap.usedTo \n", heap.toNext - heap.to);
 
 }
@@ -607,7 +607,7 @@ static void Tiger_gc ()
   fprintf(stderr, "I am here.....................\n");
   dump_heap();
   clock_t stop = clock();
-  fprintf(stderr, "GC: round %d, cost %d clocks  collected %d(0x%x) bytes. size: 0x%x\n", ++round, (stop - start),
+  fprintf(stderr, "GC: round %d, cost %d clocks  collected %d(0x%x) bytes. size: 0x%x\n", round, (stop - start),
         (heap.fromFree - heap.from) - (heap.toNext - heap.to), (heap.fromFree - heap.from) - (heap.toNext - heap.to), heap.size);  
   printf("GC: round %d, cost %d clocks  collected %d(0x%x) bytes. size: 0x%x\n", ++round, (stop - start),
         (heap.fromFree - heap.from) - (heap.toNext - heap.to), (heap.fromFree - heap.from) - (heap.toNext - heap.to), heap.size);

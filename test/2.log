@@ -1,0 +1,490 @@
+--------------------------------------@@@@@@@@@@ Tiger_new 10  16>>>>>
+new obj:
+>>>obj: 404064
+>>>obj: 0
+>>>obj: 0
+>>>obj: 20041be8
+=================<<<<<
+>>>obj:   404064 vptr
+>>>obj:        0 isObjOrArray
+>>>obj:        0 length
+>>>obj: 20041be8 forwarding  &:20041bf4
+=====================================
+     258 heap.size 
+20041be8 heap.from 
+20041bf8 heap.fromFree 
+20041e40 heap.to 
+       0 heap.toStart 
+       0 heap.toNext 
+      10 ::: heap.usedFrom 
+dffbe1c0 ::: heap.usedTo 
+=====>>>> Tiger_new ret: 20041be8>>>>>
+========================================>>>>>>>>>>>>>>>>>> method foo start
+--------------------------------------@@@@@@@@@@ Tiger_new 14  20>>>>>
+new obj:
+>>>obj: 40406c
+>>>obj: 0
+>>>obj: 0
+>>>obj: 20041bf8
+=================<<<<<
+>>>obj:   40406c vptr
+>>>obj:        0 isObjOrArray
+>>>obj:        0 length
+>>>obj: 20041bf8 forwarding  &:20041c04
+=====================================
+     258 heap.size 
+20041be8 heap.from 
+20041c0c heap.fromFree 
+20041e40 heap.to 
+       0 heap.toStart 
+       0 heap.toNext 
+      24 ::: heap.usedFrom 
+dffbe1c0 ::: heap.usedTo 
+=====>>>> Tiger_new ret: 20041bf8>>>>>
+========================================>>>>>>>>>>>>>>>>>> method allocate start
+--------------------------------------@@@@@@@@@@ Tiger_new_array 1a0  416>>>>>
+>>>obj: 0
+>>>obj: 1
+>>>obj: 64
+>>>obj: 20041c0c
+=================<<<<<
+>>>obj:        0 vptr
+>>>obj:        1 isObjOrArray
+>>>obj:       64 length
+>>>obj: 20041c0c forwarding  &:20041c18
+=====================================
+     258 heap.size 
+20041be8 heap.from 
+20041dac heap.fromFree 
+20041e40 heap.to 
+       0 heap.toStart 
+       0 heap.toNext 
+     1c4 ::: heap.usedFrom 
+dffbe1c0 ::: heap.usedTo 
+=====>>>> Tiger_new_array ret: 20041c0c>>>>>
+========================================<<<<<<<<<<<<<<<<<<< method allocate leave
+--------------------------------------@@@@@@@@@@ Tiger_new 14  20>>>>>
+new obj:
+>>>obj: 40406c
+>>>obj: 0
+>>>obj: 0
+>>>obj: 20041dac
+=================<<<<<
+>>>obj:   40406c vptr
+>>>obj:        0 isObjOrArray
+>>>obj:        0 length
+>>>obj: 20041dac forwarding  &:20041db8
+=====================================
+     258 heap.size 
+20041be8 heap.from 
+20041dc0 heap.fromFree 
+20041e40 heap.to 
+       0 heap.toStart 
+       0 heap.toNext 
+     1d8 ::: heap.usedFrom 
+dffbe1c0 ::: heap.usedTo 
+=====>>>> Tiger_new ret: 20041dac>>>>>
+========================================>>>>>>>>>>>>>>>>>> method allocate start
+--------------------------------------@@@@@@@@@@ Tiger_new_array 1a0  416>>>>>
+--------------------------------------@@@@@@@@@@ Tiger_gc>>>>>
+------ prev: 22ab6c >>>>>
+--------------------------------------@@@@@@@@@@ dump_GC_frame   22ab6c>>>>>
+>>>frame: 22aba0
+>>>frame: 404aa9
+>>>frame: 22ab90
+>>>frame: 1
+=================<<<<<
+>>>frame:   22aba0 gc_prev
+>>>frame:   404aa9 arguments_gc_map
+>>>frame:   22ab90 arguments_base_address
+>>>frame:        1 localRefCount
+>>>frame:        0 refs
+=====================================
+     258 heap.size 
+20041be8 heap.from 
+20041dc0 heap.fromFree 
+20041e40 heap.to 
+20041e40 heap.toStart 
+20041e40 heap.toNext 
+     1d8 ::: heap.usedFrom 
+       0 ::: heap.usedTo 
+argc: 1
+arguments_gc_map = "1"  [0] = 1
+objAddr: 20041dac
+------------------------@@@@@@ IsObjInitialized   20041dac
+--------------------------------------@@@@@@@@@@ IsInToSpace   20041dac
+LOSS 0: 20041dac
+--------------------------------------@@@@@@@@@@ CopyObject 20041dac  count:0>>>>>
+addr: 20041dac addr: 20041dac  vvvv: 40406c
+>>>obj: 40406c
+>>>obj: 0
+>>>obj: 0
+>>>obj: 20041dac
+=================<<<<<
+>>>obj:   40406c vptr
+>>>obj:        0 isObjOrArray
+>>>obj:        0 length
+>>>obj: 20041dac forwarding  &:20041db8
+I am here.CCCCopy**************========= vptr: 40406c
+I am here.CCCCopy**************========= 1
+I am here.CCCCopy************** >>>>>>>> 14 20
+heap: 258
+heap: 20041be8
+heap: 20041dc0
+heap: 20041e40
+heap: 20041e40
+heap: 20041e40
+>>>>>>>>>>>>>>args finished2222!!!!!!
+>>>>>>>>>>>>>>localRefCount  1
+locals[0]: 0
+------------------------@@@@@@ IsObjInitialized   0
+Next prev:  22aba0
+------ prev: 22aba0 >>>>>
+--------------------------------------@@@@@@@@@@ dump_GC_frame   22aba0>>>>>
+>>>frame: 0
+>>>frame: 404aab
+>>>frame: 22abd0
+>>>frame: 3
+=================<<<<<
+>>>frame:        0 gc_prev
+>>>frame:   404aab arguments_gc_map
+>>>frame:   22abd0 arguments_base_address
+>>>frame:        3 localRefCount
+>>>frame: 20041dac refs
+>>>frame: 20041dac refs
+>>>frame: 20041dac refs
+=====================================
+     258 heap.size 
+20041be8 heap.from 
+20041dc0 heap.fromFree 
+20041e40 heap.to 
+20041e40 heap.toStart 
+20041e54 heap.toNext 
+     1d8 ::: heap.usedFrom 
+      14 ::: heap.usedTo 
+argc: 2
+arguments_gc_map = "10"  [0] = 1
+objAddr: 20041be8
+------------------------@@@@@@ IsObjInitialized   20041be8
+--------------------------------------@@@@@@@@@@ IsInToSpace   20041be8
+LOSS 1: 20041be8
+--------------------------------------@@@@@@@@@@ CopyObject 20041be8  count:1>>>>>
+addr: 20041be8 addr: 20041be8  vvvv: 404064
+>>>obj: 404064
+>>>obj: 0
+>>>obj: 0
+>>>obj: 20041be8
+=================<<<<<
+>>>obj:   404064 vptr
+>>>obj:        0 isObjOrArray
+>>>obj:        0 length
+>>>obj: 20041be8 forwarding  &:20041bf4
+I am here.CCCCopy**************========= vptr: 404064
+I am here.CCCCopy**************========= 
+I am here.CCCCopy************** >>>>>>>> 10 16
+heap: 258
+heap: 20041be8
+heap: 20041dc0
+heap: 20041e40
+heap: 20041e40
+heap: 20041e54
+arguments_gc_map = "10"  [1] = 0
+>>>>>>>>>>>>>>args finished2222!!!!!!
+>>>>>>>>>>>>>>localRefCount  3
+locals[0]: 20041dac
+------------------------@@@@@@ IsObjInitialized   20041dac
+--------------------------------------@@@@@@@@@@ IsInToSpace   20041dac
+HIT already moved to TO.
+locals[0]: 20041e40
+locals[1]: 20041dac
+------------------------@@@@@@ IsObjInitialized   20041dac
+--------------------------------------@@@@@@@@@@ IsInToSpace   20041dac
+HIT already moved to TO.
+locals[1]: 20041e40
+locals[2]: 20041dac
+------------------------@@@@@@ IsObjInitialized   20041dac
+--------------------------------------@@@@@@@@@@ IsInToSpace   20041dac
+HIT already moved to TO.
+locals[2]: 20041e40
+Next prev:  0
+>>>>>>>>>>>>>>locals finished!!!!!!
+I am here.....................
+=====================================
+     258 heap.size 
+20041be8 heap.from 
+20041dc0 heap.fromFree 
+20041e40 heap.to 
+20041e40 heap.toStart 
+20041e64 heap.toNext 
+     1d8 ::: heap.usedFrom 
+      24 ::: heap.usedTo 
+--------------------------------------@@@@@@@@@@ CopyObjectFields>>>>>
+----------------- 1  1 >>>>>
+------------------------@@@@@@ IsObjInitialized   0
+-----------------CopyObjectFields +20 toStart:20041e54 >>>>>
+=====================================
+     258 heap.size 
+20041be8 heap.from 
+20041dc0 heap.fromFree 
+20041e40 heap.to 
+20041e54 heap.toStart 
+20041e64 heap.toNext 
+     1d8 ::: heap.usedFrom 
+      24 ::: heap.usedTo 
+--------------------------------------@@@@@@@@@@ CopyObjectFields>>>>>
+-----------------   0 >>>>>
+-----------------CopyObjectFields +16 toStart:20041e64 >>>>>
+I am here.....................
+=====================================
+     258 heap.size 
+20041be8 heap.from 
+20041dc0 heap.fromFree 
+20041e40 heap.to 
+20041e64 heap.toStart 
+20041e64 heap.toNext 
+     1d8 ::: heap.usedFrom 
+      24 ::: heap.usedTo 
+GC: round 0, cost 0 clocks  collected 436(0x1b4) bytes. size: 0x258
+=====================================
+     258 heap.size 
+20041e40 heap.from 
+20041e64 heap.fromFree 
+20041be8 heap.to 
+20041be8 heap.toStart 
+20041be8 heap.toNext 
+      24 ::: heap.usedFrom 
+       0 ::: heap.usedTo 
+OK!!! resume after GC.
+>>>obj: 0
+>>>obj: 1
+>>>obj: 64
+>>>obj: 20041e64
+=================<<<<<
+>>>obj:        0 vptr
+>>>obj:        1 isObjOrArray
+>>>obj:       64 length
+>>>obj: 20041e64 forwarding  &:20041e70
+=====================================
+     258 heap.size 
+20041e40 heap.from 
+20042004 heap.fromFree 
+20041be8 heap.to 
+20041be8 heap.toStart 
+20041be8 heap.toNext 
+     1c4 ::: heap.usedFrom 
+       0 ::: heap.usedTo 
+=====>>>> Tiger_new_array ret: 20041e64>>>>>
+========================================<<<<<<<<<<<<<<<<<<< method allocate leave
+--------------------------------------@@@@@@@@@@ Tiger_new 14  20>>>>>
+new obj:
+>>>obj: 40406c
+>>>obj: 0
+>>>obj: 0
+>>>obj: 20042004
+=================<<<<<
+>>>obj:   40406c vptr
+>>>obj:        0 isObjOrArray
+>>>obj:        0 length
+>>>obj: 20042004 forwarding  &:20042010
+=====================================
+     258 heap.size 
+20041e40 heap.from 
+20042018 heap.fromFree 
+20041be8 heap.to 
+20041be8 heap.toStart 
+20041be8 heap.toNext 
+     1d8 ::: heap.usedFrom 
+       0 ::: heap.usedTo 
+=====>>>> Tiger_new ret: 20042004>>>>>
+========================================>>>>>>>>>>>>>>>>>> method allocate start
+--------------------------------------@@@@@@@@@@ Tiger_new_array 1a0  416>>>>>
+--------------------------------------@@@@@@@@@@ Tiger_gc>>>>>
+------ prev: 22ab6c >>>>>
+--------------------------------------@@@@@@@@@@ dump_GC_frame   22ab6c>>>>>
+>>>frame: 22aba0
+>>>frame: 404aa9
+>>>frame: 22ab90
+>>>frame: 1
+=================<<<<<
+>>>frame:   22aba0 gc_prev
+>>>frame:   404aa9 arguments_gc_map
+>>>frame:   22ab90 arguments_base_address
+>>>frame:        1 localRefCount
+>>>frame:        0 refs
+=====================================
+     258 heap.size 
+20041e40 heap.from 
+20042018 heap.fromFree 
+20041be8 heap.to 
+20041be8 heap.toStart 
+20041be8 heap.toNext 
+     1d8 ::: heap.usedFrom 
+       0 ::: heap.usedTo 
+argc: 1
+arguments_gc_map = "1"  [0] = 1
+objAddr: 20042004
+------------------------@@@@@@ IsObjInitialized   20042004
+--------------------------------------@@@@@@@@@@ IsInToSpace   20042004
+LOSS 2: 20042004
+--------------------------------------@@@@@@@@@@ CopyObject 20042004  count:2>>>>>
+addr: 20042004 addr: 20042004  vvvv: 40406c
+>>>obj: 40406c
+>>>obj: 0
+>>>obj: 0
+>>>obj: 20042004
+=================<<<<<
+>>>obj:   40406c vptr
+>>>obj:        0 isObjOrArray
+>>>obj:        0 length
+>>>obj: 20042004 forwarding  &:20042010
+I am here.CCCCopy**************========= vptr: 40406c
+I am here.CCCCopy**************========= 1
+I am here.CCCCopy************** >>>>>>>> 14 20
+heap: 258
+heap: 20041e40
+heap: 20042018
+heap: 20041be8
+heap: 20041be8
+heap: 20041be8
+>>>>>>>>>>>>>>args finished2222!!!!!!
+>>>>>>>>>>>>>>localRefCount  1
+locals[0]: 0
+------------------------@@@@@@ IsObjInitialized   0
+Next prev:  22aba0
+------ prev: 22aba0 >>>>>
+--------------------------------------@@@@@@@@@@ dump_GC_frame   22aba0>>>>>
+>>>frame: 0
+>>>frame: 404aab
+>>>frame: 22abd0
+>>>frame: 3
+=================<<<<<
+>>>frame:        0 gc_prev
+>>>frame:   404aab arguments_gc_map
+>>>frame:   22abd0 arguments_base_address
+>>>frame:        3 localRefCount
+>>>frame: 20042004 refs
+>>>frame: 20042004 refs
+>>>frame: 20042004 refs
+=====================================
+     258 heap.size 
+20041e40 heap.from 
+20042018 heap.fromFree 
+20041be8 heap.to 
+20041be8 heap.toStart 
+20041bfc heap.toNext 
+     1d8 ::: heap.usedFrom 
+      14 ::: heap.usedTo 
+argc: 2
+arguments_gc_map = "10"  [0] = 1
+objAddr: 20041e54
+------------------------@@@@@@ IsObjInitialized   20041e54
+--------------------------------------@@@@@@@@@@ IsInToSpace   20041e54
+LOSS 3: 20041e54
+--------------------------------------@@@@@@@@@@ CopyObject 20041e54  count:3>>>>>
+addr: 20041e54 addr: 20041e54  vvvv: 404064
+>>>obj: 404064
+>>>obj: 0
+>>>obj: 0
+>>>obj: 20041e54
+=================<<<<<
+>>>obj:   404064 vptr
+>>>obj:        0 isObjOrArray
+>>>obj:        0 length
+>>>obj: 20041e54 forwarding  &:20041e60
+I am here.CCCCopy**************========= vptr: 404064
+I am here.CCCCopy**************========= 
+I am here.CCCCopy************** >>>>>>>> 10 16
+heap: 258
+heap: 20041e40
+heap: 20042018
+heap: 20041be8
+heap: 20041be8
+heap: 20041bfc
+arguments_gc_map = "10"  [1] = 0
+>>>>>>>>>>>>>>args finished2222!!!!!!
+>>>>>>>>>>>>>>localRefCount  3
+locals[0]: 20042004
+------------------------@@@@@@ IsObjInitialized   20042004
+--------------------------------------@@@@@@@@@@ IsInToSpace   20042004
+HIT already moved to TO.
+locals[0]: 20041be8
+locals[1]: 20042004
+------------------------@@@@@@ IsObjInitialized   20042004
+--------------------------------------@@@@@@@@@@ IsInToSpace   20042004
+HIT already moved to TO.
+locals[1]: 20041be8
+locals[2]: 20042004
+------------------------@@@@@@ IsObjInitialized   20042004
+--------------------------------------@@@@@@@@@@ IsInToSpace   20042004
+HIT already moved to TO.
+locals[2]: 20041be8
+Next prev:  0
+>>>>>>>>>>>>>>locals finished!!!!!!
+I am here.....................
+=====================================
+     258 heap.size 
+20041e40 heap.from 
+20042018 heap.fromFree 
+20041be8 heap.to 
+20041be8 heap.toStart 
+20041c0c heap.toNext 
+     1d8 ::: heap.usedFrom 
+      24 ::: heap.usedTo 
+--------------------------------------@@@@@@@@@@ CopyObjectFields>>>>>
+----------------- 1  1 >>>>>
+------------------------@@@@@@ IsObjInitialized   0
+-----------------CopyObjectFields +20 toStart:20041bfc >>>>>
+=====================================
+     258 heap.size 
+20041e40 heap.from 
+20042018 heap.fromFree 
+20041be8 heap.to 
+20041bfc heap.toStart 
+20041c0c heap.toNext 
+     1d8 ::: heap.usedFrom 
+      24 ::: heap.usedTo 
+--------------------------------------@@@@@@@@@@ CopyObjectFields>>>>>
+-----------------   0 >>>>>
+-----------------CopyObjectFields +16 toStart:20041c0c >>>>>
+I am here.....................
+=====================================
+     258 heap.size 
+20041e40 heap.from 
+20042018 heap.fromFree 
+20041be8 heap.to 
+20041c0c heap.toStart 
+20041c0c heap.toNext 
+     1d8 ::: heap.usedFrom 
+      24 ::: heap.usedTo 
+GC: round 1, cost 0 clocks  collected 436(0x1b4) bytes. size: 0x258
+=====================================
+     258 heap.size 
+20041be8 heap.from 
+20041c0c heap.fromFree 
+20041e40 heap.to 
+20041e40 heap.toStart 
+20041e40 heap.toNext 
+      24 ::: heap.usedFrom 
+       0 ::: heap.usedTo 
+OK!!! resume after GC.
+>>>obj: 0
+>>>obj: 1
+>>>obj: 64
+>>>obj: 20041c0c
+=================<<<<<
+>>>obj:        0 vptr
+>>>obj:        1 isObjOrArray
+>>>obj:       64 length
+>>>obj: 20041c0c forwarding  &:20041c18
+=====================================
+     258 heap.size 
+20041be8 heap.from 
+20041dac heap.fromFree 
+20041e40 heap.to 
+20041e40 heap.toStart 
+20041e40 heap.toNext 
+     1c4 ::: heap.usedFrom 
+       0 ::: heap.usedTo 
+=====>>>> Tiger_new_array ret: 20041c0c>>>>>
+========================================<<<<<<<<<<<<<<<<<<< method allocate leave
+========================================<<<<<<<<<<<<<<<<<<< method foo leave
