@@ -72,15 +72,15 @@ void Tiger_heap_init (int heapSize)
 
 void dump_heap()
 {
-  fprintf(stderr, "=====================================\n");
-  fprintf(stderr, "%8x heap.size \n", heap.size);
-  fprintf(stderr, "%8x heap.from \n", heap.from);
-  fprintf(stderr, "%8x heap.fromFree \n", heap.fromFree);
-  fprintf(stderr, "%8x heap.to \n", heap.to);
-  fprintf(stderr, "%8x heap.toStart \n", heap.toStart);
-  fprintf(stderr, "%8x heap.toNext \n", heap.toNext);
-  fprintf(stderr, "%8x %d::: heap.usedFrom \n", heap.fromFree - heap.from, heap.fromFree - heap.from);
-  fprintf(stderr, "%8x ::: heap.usedTo \n", heap.toNext - heap.to);
+  //fprintf(stderr, "=====================================\n");
+  //fprintf(stderr, "%8x heap.size \n", heap.size);
+  //fprintf(stderr, "%8x heap.from \n", heap.from);
+  //fprintf(stderr, "%8x heap.fromFree \n", heap.fromFree);
+  //fprintf(stderr, "%8x heap.to \n", heap.to);
+  //fprintf(stderr, "%8x heap.toStart \n", heap.toStart);
+  //fprintf(stderr, "%8x heap.toNext \n", heap.toNext);
+  //fprintf(stderr, "%8x %d::: heap.usedFrom \n", heap.fromFree - heap.from, heap.fromFree - heap.from);
+  //fprintf(stderr, "%8x ::: heap.usedTo \n", heap.toNext - heap.to);
 
 }
 
@@ -135,7 +135,7 @@ void *Tiger_new (void *vtable, int size)
   // // #1: "malloc" a chunk of memory of size "size":
   // void * obj = malloc(size);
   // if(obj < 0){
-  //   fprintf(stderr, "malloc failed!");
+  //   //fprintf(stderr, "malloc failed!");
   //   exit(1);
   // }
   // // #2: clear this chunk of memory (zero off it):
@@ -148,12 +148,12 @@ void *Tiger_new (void *vtable, int size)
    // You should write 4 statements for this function.
    // #1: "malloc" a chunk of memory of size "size":
    //void * obj = malloc(size);
-  fprintf(stderr, "--------------------------------------@@@@@@@@@@ Tiger_new %x  %d>>>>>\n", size, size);
+  //fprintf(stderr, "--------------------------------------@@@@@@@@@@ Tiger_new %x  %d>>>>>\n", size, size);
 
   if(heap.fromFree - heap.from + size > heap.size){
     Tiger_gc();
     if(heap.fromFree - heap.from + size > heap.size){
-      fprintf(stderr, "ERROR: 1OutOfMemory!\n");
+      fprintf(stderr, "ERROR: OutOfMemory!\n");
       exit(2);
     }
   }
@@ -174,10 +174,10 @@ void *Tiger_new (void *vtable, int size)
    *((int *)obj + 1) = 0;   /* isObjOrArray = 0; */
    *((int *)obj + 3) = (int)obj;    /* forwarding = obj; */
 
-   fprintf(stderr, "new obj:\n");
+   //fprintf(stderr, "new obj:\n");
   dump_Obj_Header((int)obj);
   dump_heap();
-  fprintf(stderr, "=====>>>> Tiger_new ret: %x>>>>>\n", obj);
+  //fprintf(stderr, "=====>>>> Tiger_new ret: %x>>>>>\n", obj);
    // #4: return the pointer
    return obj;
 }
@@ -222,7 +222,7 @@ void *Tiger_new_array (int length)
   // // Your code here:
   // void * arr = malloc((length + 1) * sizeof(int));
   // if(arr < 0){
-  //   fprintf(stderr, "malloc failed!");
+  //   //fprintf(stderr, "malloc failed!");
   //   exit(1);
   // }
   // // #2: clear this chunk of memory (zero off it):
@@ -234,15 +234,15 @@ void *Tiger_new_array (int length)
    // Your code here:
   int size = (length + 4) * sizeof(int);
 
-  fprintf(stderr, "--------------------------------------@@@@@@@@@@ Tiger_new_array %x  %d>>>>>\n", size, size);
+  //fprintf(stderr, "--------------------------------------@@@@@@@@@@ Tiger_new_array %x  %d>>>>>\n", size, size);
 
   if(heap.fromFree - heap.from + size > heap.size){
     Tiger_gc();
     if(heap.fromFree - heap.from + size > heap.size){
-      fprintf(stderr, "ERROR: 2OutOfMemory!\n");
+      fprintf(stderr, "ERROR: OutOfMemory!\n");
       exit(2);
     }else{
-      fprintf(stderr, "OK!!! resume after GC.\n");
+      //fprintf(stderr, "OK!!! resume after GC.\n");
     }
   }
 
@@ -260,7 +260,7 @@ void *Tiger_new_array (int length)
 
   dump_Obj_Header((int)arr);
   dump_heap();
-  fprintf(stderr, "=====>>>> Tiger_new_array ret: %x>>>>>\n", arr);
+  //fprintf(stderr, "=====>>>> Tiger_new_array ret: %x>>>>>\n", arr);
 
    return (void *)arr;
 }
@@ -282,7 +282,7 @@ static void swap(void *a, void *b)
 
 static int IsObjInitialized(int obj_Addr)
 {
-  fprintf(stderr, "------------------------@@@@@@ IsObjInitialized   %x\n", obj_Addr);
+  //fprintf(stderr, "------------------------@@@@@@ IsObjInitialized   %x\n", obj_Addr);
   if (obj_Addr)
   {
     // printf("Inited\n");
@@ -331,19 +331,19 @@ int GetObjSize(int obj_Addr)
 static int IsInToSpace(int obj_Addr)
 {
     static int count = 0;
-    fprintf(stderr, "--------------------------------------@@@@@@@@@@ IsInToSpace   %x\n", obj_Addr);
+    //fprintf(stderr, "--------------------------------------@@@@@@@@@@ IsInToSpace   %x\n", obj_Addr);
 
     if ((int)heap.to <= (int)obj_Addr &&
         (int)obj_Addr < (int)heap.toNext){ /* already in 'to' */
-      fprintf(stderr, "HIT already in to NO.%d : %x\n", count++, obj_Addr);
+      //fprintf(stderr, "HIT already in to NO.%d : %x\n", count++, obj_Addr);
       return 1;
     }else{      
       if (GetForwarding(obj_Addr) != obj_Addr)
       {
-        fprintf(stderr, "HIT already moved to TO.\n");        
+        //fprintf(stderr, "HIT already moved to TO.\n");        
         return 2;
       }else{
-        fprintf(stderr, "LOSS %d: %x\n", count++, obj_Addr);
+        //fprintf(stderr, "LOSS %d: %x\n", count++, obj_Addr);
         return 0;  
       }      
     }    
@@ -354,11 +354,11 @@ void dump_GC_frame(int addr)
 {
     int i = 0;
     int * p = (int *)addr;
-    fprintf(stderr, "--------------------------------------@@@@@@@@@@ dump_GC_frame   %x>>>>>\n", addr);
+    //fprintf(stderr, "--------------------------------------@@@@@@@@@@ dump_GC_frame   %x>>>>>\n", addr);
     for(i = 0; i < 4; i++){
-      fprintf(stderr, ">>>frame: %x\n", p[i]);
+      //fprintf(stderr, ">>>frame: %x\n", p[i]);
     }
-    fprintf(stderr, "=================<<<<<\n");
+    //fprintf(stderr, "=================<<<<<\n");
 
     int prev = addr;
     void * gc_prev = *((void **)prev);
@@ -366,16 +366,16 @@ void dump_GC_frame(int addr)
     int * arguments_base_address = (int *)*((void **)prev + 2);
     // char * locals_gc_map = (char *)*((void **)prev + 3);
     int localRefCount = *((int *)prev + 3);
-    fprintf(stderr, ">>>frame: %8x gc_prev\n", gc_prev);
-    fprintf(stderr, ">>>frame: %8x arguments_gc_map\n", arguments_gc_map);
-    fprintf(stderr, ">>>frame: %8x arguments_base_address\n", arguments_base_address);
-    fprintf(stderr, ">>>frame: %8x localRefCount\n", localRefCount);
+    //fprintf(stderr, ">>>frame: %8x gc_prev\n", gc_prev);
+    //fprintf(stderr, ">>>frame: %8x arguments_gc_map\n", arguments_gc_map);
+    //fprintf(stderr, ">>>frame: %8x arguments_base_address\n", arguments_base_address);
+    //fprintf(stderr, ">>>frame: %8x localRefCount\n", localRefCount);
 
 
     // int i = 0;
     for (i = 0; i < localRefCount; ++i)
     {
-      fprintf(stderr, ">>>frame: %8x refs\n", *((int *)prev + 4 + i));
+      //fprintf(stderr, ">>>frame: %8x refs\n", *((int *)prev + 4 + i));
     }    
 }
 
@@ -384,9 +384,9 @@ void dump_Obj_Header(int addr)
     int i = 0;
     int * p = (int *)addr;
     for(i = 0; i < 4; i++){
-      fprintf(stderr, ">>>obj: %x\n", p[i]);
+      //fprintf(stderr, ">>>obj: %x\n", p[i]);
     }
-    fprintf(stderr, "=================<<<<<\n");
+    //fprintf(stderr, "=================<<<<<\n");
 
     int * obj = p;
     void * vptr = (void *)obj[0];    
@@ -394,10 +394,10 @@ void dump_Obj_Header(int addr)
     int length = obj[2];
     char ** from_forwarding_Addr = (char **)&obj[3];  /* &obj.forwarding in from space */
 
-    fprintf(stderr, ">>>obj: %8x vptr\n", vptr);
-    fprintf(stderr, ">>>obj: %8x isObjOrArray\n", isObjOrArray);
-    fprintf(stderr, ">>>obj: %8x length\n", length);
-    fprintf(stderr, ">>>obj: %8x forwarding  &:%8x\n", *from_forwarding_Addr, from_forwarding_Addr);
+    //fprintf(stderr, ">>>obj: %8x vptr\n", vptr);
+    //fprintf(stderr, ">>>obj: %8x isObjOrArray\n", isObjOrArray);
+    //fprintf(stderr, ">>>obj: %8x length\n", length);
+    //fprintf(stderr, ">>>obj: %8x forwarding  &:%8x\n", *from_forwarding_Addr, from_forwarding_Addr);
     
 }
 
@@ -409,44 +409,44 @@ void dump_Obj_Header(int addr)
 static int CopyObject(int obj_Addr)
 {
   static int count = 0;
-  fprintf(stderr, "--------------------------------------@@@@@@@@@@ CopyObject %x  count:%d>>>>>\n", obj_Addr, count++);
+  //fprintf(stderr, "--------------------------------------@@@@@@@@@@ CopyObject %x  count:%d>>>>>\n", obj_Addr, count++);
 
-  // fprintf(stderr, "::::CopyObject::::  %d\n", count++);
- //  fprintf(stderr, "vvvv: %x\n", *((int *)obj_Addr));
+  // //fprintf(stderr, "::::CopyObject::::  %d\n", count++);
+ //  //fprintf(stderr, "vvvv: %x\n", *((int *)obj_Addr));
     int * obj = (int *)obj_Addr;
-    // fprintf(stderr, "I am here.CCCCopy111122223333444555\n");
-    fprintf(stderr, "addr: %x addr: %x  vvvv: %x\n", (int)obj, obj_Addr, *((int *)obj_Addr));
+    // //fprintf(stderr, "I am here.CCCCopy111122223333444555\n");
+    //fprintf(stderr, "addr: %x addr: %x  vvvv: %x\n", (int)obj, obj_Addr, *((int *)obj_Addr));
     dump_Obj_Header(obj_Addr);
 
 
     void * vptr = (void *)obj[0];
-    // fprintf(stderr, "I am here.CCCCopy111122223333444\n");
+    // //fprintf(stderr, "I am here.CCCCopy111122223333444\n");
     int isObjOrArray = obj[1];
-    // fprintf(stderr, "I am here.CCCCopy111122223333\n");
+    // //fprintf(stderr, "I am here.CCCCopy111122223333\n");
     int length = obj[2];
     char ** from_forwarding_Addr = (char **)&obj[3];  /* &obj.forwarding in from space */
 
     int objSize;
 
-    // fprintf(stderr, "I am here.CCCCopy1111++++++++++++\n");
+    // //fprintf(stderr, "I am here.CCCCopy1111++++++++++++\n");
     if (isObjOrArray == 0){  /* YKG. normal object */ 
-    fprintf(stderr, "I am here.CCCCopy**************========= vptr: %x\n", vptr);       
-    fprintf(stderr, "I am here.CCCCopy**************========= %s\n", *(char **)vptr);       
+    //fprintf(stderr, "I am here.CCCCopy**************========= vptr: %x\n", vptr);       
+    //fprintf(stderr, "I am here.CCCCopy**************========= %s\n", *(char **)vptr);       
       int fieldCount = strlen(*(char **)vptr); /* strlen(field_gc_map) */
       objSize = (4 + fieldCount)*sizeof(int); /* 4 for obj header */
     }else{
-    fprintf(stderr, "I am here.CCCCopy**************========= %s %d\n", "else", length);
+    //fprintf(stderr, "I am here.CCCCopy**************========= %s %d\n", "else", length);
       objSize = (4 + length)*sizeof(int);
     }
-    fprintf(stderr, "I am here.CCCCopy************** >>>>>>>> %x %d\n", objSize, objSize);
-    fprintf(stderr, "heap: %x\n", heap.size);
-      fprintf(stderr, "heap: %x\n", heap.from);
-      fprintf(stderr, "heap: %x\n", heap.fromFree);
-      fprintf(stderr, "heap: %x\n", heap.to);
-      fprintf(stderr, "heap: %x\n", heap.toStart);
-      fprintf(stderr, "heap: %x\n", heap.toNext);
+    //fprintf(stderr, "I am here.CCCCopy************** >>>>>>>> %x %d\n", objSize, objSize);
+    //fprintf(stderr, "heap: %x\n", heap.size);
+      //fprintf(stderr, "heap: %x\n", heap.from);
+      //fprintf(stderr, "heap: %x\n", heap.fromFree);
+      //fprintf(stderr, "heap: %x\n", heap.to);
+      //fprintf(stderr, "heap: %x\n", heap.toStart);
+      //fprintf(stderr, "heap: %x\n", heap.toNext);
     if(heap.toNext + objSize - heap.to > heap.size){
-       fprintf(stderr, "ERROR: 3OutOfMemory!\n");
+       fprintf(stderr, "ERROR: OutOfMemory!\n");
        exit(333);     
     }
 
@@ -464,7 +464,7 @@ static int CopyObject(int obj_Addr)
 
 static void CopyObjectFields(int obj_Addr)
 {
-    fprintf(stderr, "--------------------------------------@@@@@@@@@@ CopyObjectFields>>>>>\n");
+    //fprintf(stderr, "--------------------------------------@@@@@@@@@@ CopyObjectFields>>>>>\n");
     int * obj = (int *)obj_Addr;
 
     void * vptr = (void *)obj[0];
@@ -478,7 +478,7 @@ static void CopyObjectFields(int obj_Addr)
       char * gc_map = *((char **)vptr);    
       int fieldCount = strlen(gc_map);
       
-      fprintf(stderr, "----------------- %s  %d >>>>>\n", gc_map, fieldCount);
+      //fprintf(stderr, "----------------- %s  %d >>>>>\n", gc_map, fieldCount);
       int i;    
       for(i = 0; i < fieldCount; i++){
         if(gc_map[i] == '1'){
@@ -489,7 +489,7 @@ static void CopyObjectFields(int obj_Addr)
       }
     }
     heap.toStart += size;
-    fprintf(stderr, "-----------------CopyObjectFields +%d toStart:%x >>>>>\n", size, heap.toStart);
+    //fprintf(stderr, "-----------------CopyObjectFields +%d toStart:%x >>>>>\n", size, heap.toStart);
 
     assert(heap.toNext - heap.to <= heap.size);
     // return (int)*from_forwarding_Addr;
@@ -504,7 +504,7 @@ static void Tiger_gc ()
 {
   static int round = 0;
   clock_t start = clock();
-  fprintf(stderr, "--------------------------------------@@@@@@@@@@ Tiger_gc>>>>>\n");
+  //fprintf(stderr, "--------------------------------------@@@@@@@@@@ Tiger_gc>>>>>\n");
   // Your code here:
   // return;
 
@@ -513,7 +513,7 @@ static void Tiger_gc ()
   heap.toNext = heap.to;
   void * saved_prev = prev;
   while(prev != NULL){
-    fprintf(stderr, "------ prev: %x >>>>>\n", prev);
+    //fprintf(stderr, "------ prev: %x >>>>>\n", prev);
     dump_GC_frame((int)prev);
     dump_heap();
     void * gc_prev = *((void **)prev);
@@ -521,7 +521,7 @@ static void Tiger_gc ()
     int * arguments_base_address = (int *)*((void **)prev + 2);
     // char * locals_gc_map = (char *)*((void **)prev + 3);
     int localRefCount = *((int *)prev + 3);
-    // fprintf(stderr, "I am here.  %x\n", arguments_base_address);
+    // //fprintf(stderr, "I am here.  %x\n", arguments_base_address);
 
 
 
@@ -529,25 +529,25 @@ static void Tiger_gc ()
     // args refs
     int argc = strlen(arguments_gc_map);
     int i;
-    fprintf(stderr, "argc: %d\n", argc);
+    //fprintf(stderr, "argc: %d\n", argc);
     for (i = 0; i < argc; ++i){
-      fprintf(stderr, "arguments_gc_map = \"%s\"  [%d] = %c\n", arguments_gc_map, i, arguments_gc_map[i]);
+      //fprintf(stderr, "arguments_gc_map = \"%s\"  [%d] = %c\n", arguments_gc_map, i, arguments_gc_map[i]);
       if(arguments_gc_map[i] == '1'){
         int obj_Addr = *(arguments_base_address + i); /* YKG. BUG FIXED! */
-        fprintf(stderr, "objAddr: %x\n", obj_Addr);
+        //fprintf(stderr, "objAddr: %x\n", obj_Addr);
         if (IsObjInitialized(obj_Addr) && !IsInToSpace(obj_Addr)){
           
-          // fprintf(stderr, "+++++++++++++vvvv: %x\n", *((int *)obj_Addr));
-          // fprintf(stderr, "I am here.  addr:%x\n", obj_Addr);
+          // //fprintf(stderr, "+++++++++++++vvvv: %x\n", *((int *)obj_Addr));
+          // //fprintf(stderr, "I am here.  addr:%x\n", obj_Addr);
           *(arguments_base_address + i) = CopyObject(obj_Addr); /* update argv[j] */
-          // fprintf(stderr, "I am here.333\n");
+          // //fprintf(stderr, "I am here.333\n");
         }else{
-          // fprintf(stderr, ">>>>>>>>>>>>>>>>%x\n", obj_Addr);
+          // //fprintf(stderr, ">>>>>>>>>>>>>>>>%x\n", obj_Addr);
         }
       }
     }
 
-    fprintf(stderr, ">>>>>>>>>>>>>>args finished2222!!!!!!\n");
+    //fprintf(stderr, ">>>>>>>>>>>>>>args finished2222!!!!!!\n");
     
 
 
@@ -564,10 +564,10 @@ static void Tiger_gc ()
 
     // local refs
     // int localc = strlen(locals_gc_map);    
-    fprintf(stderr, ">>>>>>>>>>>>>>localRefCount  %d\n", localRefCount);
+    //fprintf(stderr, ">>>>>>>>>>>>>>localRefCount  %d\n", localRefCount);
     int * locals = (int *)((int *)prev + 4);       /* local ref start */
     for (i = 0; i < localRefCount; ++i){
-        fprintf(stderr, "locals[%d]: %x\n", i, locals[i]);
+        //fprintf(stderr, "locals[%d]: %x\n", i, locals[i]);
         if (!IsObjInitialized(locals[i])) continue;
 
         if (!IsInToSpace(locals[i])){
@@ -575,14 +575,14 @@ static void Tiger_gc ()
         }else{
           locals[i] = GetForwarding(locals[i]);
         }
-        fprintf(stderr, "locals[%d]: %x\n", i, locals[i]);
+        //fprintf(stderr, "locals[%d]: %x\n", i, locals[i]);
     }
 
     prev = (void *)(*((int **)prev));
-    fprintf(stderr, "Next prev:  %x\n", prev);
+    //fprintf(stderr, "Next prev:  %x\n", prev);
   }
   prev = saved_prev;
-  fprintf(stderr, ">>>>>>>>>>>>>>locals finished!!!!!!\n");
+  //fprintf(stderr, ">>>>>>>>>>>>>>locals finished!!!!!!\n");
 
 
 
@@ -593,7 +593,7 @@ static void Tiger_gc ()
 
 
 
-  fprintf(stderr, "I am here.....................\n");
+  //fprintf(stderr, "I am here.....................\n");
   // BFS
   // int t = 0;
   while(heap.toStart < heap.toNext){
@@ -604,14 +604,15 @@ static void Tiger_gc ()
        // if(++t > 8) exit(100);
   }
 
-  fprintf(stderr, "I am here.....................\n");
+  //fprintf(stderr, "I am here.....................\n");
   dump_heap();
   clock_t stop = clock();
-  fprintf(stderr, "GC: round %d, cost %d clocks  collected %d(0x%x) bytes. size: 0x%x\n", round, (stop - start),
-        (heap.fromFree - heap.from) - (heap.toNext - heap.to), (heap.fromFree - heap.from) - (heap.toNext - heap.to), heap.size);  
-  printf("GC: round %d, cost %d clocks  collected %d(0x%x) bytes. size: 0x%x\n", ++round, (stop - start),
-        (heap.fromFree - heap.from) - (heap.toNext - heap.to), (heap.fromFree - heap.from) - (heap.toNext - heap.to), heap.size);
-
+  // //fprintf(stderr, "GC: round %d, cost %d clocks  collected %d(0x%x) bytes. size: 0x%x\n", round, (stop - start),
+  //       (heap.fromFree - heap.from) - (heap.toNext - heap.to), (heap.fromFree - heap.from) - (heap.toNext - heap.to), heap.size);  
+  // printf("GC: round %d, cost %d clocks  collected %d(0x%x) bytes. size: 0x%x\n", ++round, (stop - start),
+  //       (heap.fromFree - heap.from) - (heap.toNext - heap.to), (heap.fromFree - heap.from) - (heap.toNext - heap.to), heap.size);
+  printf("GC: round %d, cost %fs  collected %d(0x%x) bytes.\n", ++round, (stop - start)*1.0/1000,
+        (heap.fromFree - heap.from) - (heap.toNext - heap.to), (heap.fromFree - heap.from) - (heap.toNext - heap.to));
   swap(&heap.from, &heap.to);
   heap.fromFree = heap.toNext;
   heap.toNext = heap.toStart = heap.to;  

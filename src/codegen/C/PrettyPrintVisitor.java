@@ -1,6 +1,5 @@
 package codegen.C;
 
-import java.util.LinkedHashSet;
 
 import codegen.C.exp.Block;
 import control.Control;
@@ -358,13 +357,13 @@ public class PrettyPrintVisitor implements Visitor
     		arguments_gc_map += "1";
     	}
     }
-    String locals_gc_map  = "";    
+//    String locals_gc_map  = "";    
     for (codegen.C.dec.T d : m.locals) {
     	codegen.C.dec.Dec dec = (codegen.C.dec.Dec) d;
     	if(dec.type instanceof codegen.C.type.Int){
-    		locals_gc_map += "0"; 
+//    		locals_gc_map += "0"; 
     	}else{ // int [], Class/Struct
-    		locals_gc_map += "1";
+//    		locals_gc_map += "1";
     		this.localRefs.add(dec.id);
     		
     	}
@@ -420,7 +419,7 @@ public class PrettyPrintVisitor implements Visitor
     
     this.sayln("  memset(&__GC_frame, 0, sizeof(__GC_frame));");
 //    this.sayln("  fprintf(stderr, \"@@@prev: %x " + m.id + "\\n\", prev);");
-    this.sayln("  fprintf(stderr, \"========================================>>>>>>>>>>>>>>>>>> method " + m.id + " start\\n\");");
+//    this.sayln("  fprintf(stderr, \"========================================>>>>>>>>>>>>>>>>>> method " + m.id + " start\\n\");");
     
     this.sayln("  __GC_frame.__gc_prev = prev;");
     this.sayln("  prev = &__GC_frame; ");
@@ -435,7 +434,7 @@ public class PrettyPrintVisitor implements Visitor
     
     this.sayln("  prev = __GC_frame.__gc_prev;"); /* YKG. It takes me TWO DAYS debugging!!!! */
     
-    this.sayln("  fprintf(stderr, \"========================================<<<<<<<<<<<<<<<<<<< method " + m.id + " leave\\n\");");
+//    this.sayln("  fprintf(stderr, \"========================================<<<<<<<<<<<<<<<<<<< method " + m.id + " leave\\n\");");
     this.say("  return ");
     m.retExp.accept(this);
     this.sayln(";");

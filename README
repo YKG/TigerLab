@@ -1,6 +1,13 @@
+Test Lab 4
+	Windows ONLY:
+		Change dir to test\
+		C:...\TigerLab\test> auto-test-c.bat
+
 Test Lab 3
-	For part A: test/test-c-gen-fc.bat
-	For part B: test/test-bytecode-gen-fc.bat
+	Windows ONLY:
+		Change dir to test\
+		For part A: test-c-gen-fc.bat
+		For part B: test-bytecode-gen-fc.bat
 
 
 issue 0: 2013-11-12 15:24. Think about these two expressions:

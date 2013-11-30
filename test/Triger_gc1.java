@@ -2,13 +2,13 @@
 // $ java Tiger -codegen C -auot ../test/Triger_gc1.java
 // and run it using
 // $ ./a.out @tiger -heapSize 600 -gcLog true @
-class T {
+class Triger_gc1 {
     public static void main(String[] args) {
-        System.out.println(new Test().foo(3));
+        System.out.println(new Test1().foo(3));
     }
 }
 
-class Test {
+class Test1 {
     public int foo(int j) {
         int i;
         AllocateArray aa;
