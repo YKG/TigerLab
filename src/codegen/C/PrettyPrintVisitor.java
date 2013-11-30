@@ -149,13 +149,17 @@ public class PrettyPrintVisitor implements Visitor
   @Override
   public void visit(codegen.C.exp.NewIntArray e)
   {
-	if(this.localRefs.contains(e.name)){
-		e.name = "__GC_frame." + e.name;
-	}
+//	if(this.localRefs.contains(e.name)){
+//		e.name = "__GC_frame." + e.name;
+//	}
 	
-	  this.say("(" + e.name + " = (int *)(Tiger_new_array (");
+//	  this.say("(" + e.name + " = (int *)(Tiger_new_array (");
+//	  e.exp.accept(this);
+//	  this.say(")), " + e.name + ")");
+	  
+	  this.say("((int *)(Tiger_new_array (");
 	  e.exp.accept(this);
-	  this.say(")), " + e.name + ")");
+	  this.say(")))");
 	  return;
   }
 

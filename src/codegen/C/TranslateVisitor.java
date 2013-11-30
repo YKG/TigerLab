@@ -135,11 +135,12 @@ public class TranslateVisitor implements ast.Visitor
   @Override
   public void visit(ast.exp.NewIntArray e)
   {
-	  String newid = this.genId();
-	  this.tmpVars.add(new codegen.C.dec.Dec(new codegen.C.type.IntArray(),
-	        newid));
+//	  String newid = this.genId();
+//	  this.tmpVars.add(new codegen.C.dec.Dec(new codegen.C.type.IntArray(),
+//	        newid));	  
+//	  this.exp = new codegen.C.exp.NewIntArray(this.exp, newid);
 	  e.exp.accept(this);
-	  this.exp = new codegen.C.exp.NewIntArray(this.exp, newid);
+	  this.exp = new codegen.C.exp.NewIntArray(this.exp);
 	  return;
   }
 
