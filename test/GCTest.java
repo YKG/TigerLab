@@ -7,8 +7,14 @@ class GCTest {
 class GC {
     public int foo(){
         int i;
+        int n;
 
-        i = new int[64].length;
+        i = 0;
+        n = 0;
+        while(n < 100){
+            i = new int[64].length;
+            n = n + 1;
+        }
 
         return i;
     }
@@ -19,9 +25,10 @@ class GC {
         int i;
         GC gc;
 
+        sum = 0;
         gc = new GC();
         i = 0;
-        while(i < 10){
+        while(i < 1){
             sum = sum  + gc.foo();
             i = i + 1;
         }

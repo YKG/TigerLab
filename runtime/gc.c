@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 static void Tiger_gc ();
 void dump_Obj_Header(int addr);
@@ -176,6 +177,7 @@ void *Tiger_new (void *vtable, int size)
    fprintf(stderr, "new obj:\n");
   dump_Obj_Header((int)obj);
   dump_heap();
+  fprintf(stderr, "=====>>>> Tiger_new ret: %x>>>>>\n", obj);
    // #4: return the pointer
    return obj;
 }
@@ -231,11 +233,16 @@ void *Tiger_new_array (int length)
    // You can use the C "malloc" facilities, as above.
    // Your code here:
   int size = (length + 4) * sizeof(int);
+
+  fprintf(stderr, "--------------------------------------@@@@@@@@@@ Tiger_new_array %x  %d>>>>>\n", size, size);
+
   if(heap.fromFree - heap.from + size > heap.size){
     Tiger_gc();
     if(heap.fromFree - heap.from + size > heap.size){
       fprintf(stderr, "ERROR: 2OutOfMemory!\n");
       exit(2);
+    }else{
+      fprintf(stderr, "OK!!! resume after GC.\n");
     }
   }
 
@@ -250,6 +257,10 @@ void *Tiger_new_array (int length)
    arr[1] = 1;  /* isObjOrArray = 1 */
    arr[2] = length;
    arr[3] = (int)arr; /* forwarding = obj; */
+
+  dump_Obj_Header((int)arr);
+  dump_heap();
+  fprintf(stderr, "=====>>>> Tiger_new_array ret: %x>>>>>\n", arr);
 
    return (void *)arr;
 }
@@ -289,8 +300,32 @@ static int IsObjInitialized(int obj_Addr)
 
 int GetForwarding(int obj_Addr)
 {
-    return *((int *)obj_Addr + 3);    
+  return *((int *)obj_Addr + 3);    
 }
+
+int GetObjType(int obj_Addr)
+{
+  return *((int *)obj_Addr + 1);  
+}
+
+int GetFieldCount(int obj_Addr)
+{
+  void * vptr = (void *)((int *)obj_Addr)[0];
+  char * gc_map = *((char **)vptr);    
+  return strlen(gc_map);
+}
+
+
+int GetObjSize(int obj_Addr)
+{
+  if(GetObjType(obj_Addr) == 0){
+    return (4 + GetFieldCount(obj_Addr))*sizeof(int);
+  }else{
+    int length = *((int *)obj_Addr + 2);
+    return (4 + length)*sizeof(int);
+  }  
+}
+
 
 
 static int IsInToSpace(int obj_Addr)
@@ -438,23 +473,23 @@ static void CopyObjectFields(int obj_Addr)
     // char ** from_forwarding_Addr = (char **)&obj[3];  /* &obj.forwarding in from space */
     int * fields = &obj[4];
 
-
-    if (isObjOrArray == 1) return; /* int[] */
-
-    int size;
-    char * gc_map = *((char **)vptr);    
-    int fieldCount = strlen(gc_map);
-    size = (4 + fieldCount)*sizeof(int);
-    fprintf(stderr, "----------------- %s  %d >>>>>\n", gc_map, fieldCount);
-    int i;    
-    for(i = 0; i < fieldCount; i++){
-      if(gc_map[i] == '1'){
-        if (IsObjInitialized(fields[i]) && !IsInToSpace(fields[i])){
-          fields[i] = CopyObject(fields[i]); /* update refer */
+    int size = GetObjSize(obj_Addr);
+    if (GetObjType(obj_Addr) == 0){
+      char * gc_map = *((char **)vptr);    
+      int fieldCount = strlen(gc_map);
+      
+      fprintf(stderr, "----------------- %s  %d >>>>>\n", gc_map, fieldCount);
+      int i;    
+      for(i = 0; i < fieldCount; i++){
+        if(gc_map[i] == '1'){
+          if (IsObjInitialized(fields[i]) && !IsInToSpace(fields[i])){
+            fields[i] = CopyObject(fields[i]); /* update refer */
+          }
         }
       }
     }
     heap.toStart += size;
+    fprintf(stderr, "-----------------CopyObjectFields +%d toStart:%x >>>>>\n", size, heap.toStart);
 
     assert(heap.toNext - heap.to <= heap.size);
     // return (int)*from_forwarding_Addr;
@@ -468,6 +503,7 @@ static void CopyObjectFields(int obj_Addr)
 static void Tiger_gc ()
 {
   static int round = 0;
+  clock_t start = clock();
   fprintf(stderr, "--------------------------------------@@@@@@@@@@ Tiger_gc>>>>>\n");
   // Your code here:
   // return;
@@ -475,6 +511,7 @@ static void Tiger_gc ()
   // Init
   heap.toStart = heap.to;
   heap.toNext = heap.to;
+  void * saved_prev = prev;
   while(prev != NULL){
     fprintf(stderr, "------ prev: %x >>>>>\n", prev);
     dump_GC_frame((int)prev);
@@ -509,6 +546,7 @@ static void Tiger_gc ()
         }
       }
     }
+
     fprintf(stderr, ">>>>>>>>>>>>>>args finished2222!!!!!!\n");
     
 
@@ -543,6 +581,7 @@ static void Tiger_gc ()
     prev = (void *)(*((int **)prev));
     fprintf(stderr, "Next prev:  %x\n", prev);
   }
+  prev = saved_prev;
   fprintf(stderr, ">>>>>>>>>>>>>>locals finished!!!!!!\n");
 
 
@@ -556,15 +595,22 @@ static void Tiger_gc ()
 
   fprintf(stderr, "I am here.....................\n");
   // BFS
+  // int t = 0;
   while(heap.toStart < heap.toNext){
       dump_heap();
+        int front = (int)heap.toStart;
        CopyObjectFields((int)heap.toStart);
+       assert(front != (int)heap.toStart);
+       // if(++t > 8) exit(100);
   }
 
   fprintf(stderr, "I am here.....................\n");
   dump_heap();
-  printf("GC: round %d, collected %d bytes.\n", ++round, 
-        (heap.fromFree - heap.from) - (heap.toNext - heap.to));
+  clock_t stop = clock();
+  fprintf(stderr, "GC: round %d, cost %d clocks  collected %d(0x%x) bytes. size: 0x%x\n", ++round, (stop - start),
+        (heap.fromFree - heap.from) - (heap.toNext - heap.to), (heap.fromFree - heap.from) - (heap.toNext - heap.to), heap.size);  
+  printf("GC: round %d, cost %d clocks  collected %d(0x%x) bytes. size: 0x%x\n", ++round, (stop - start),
+        (heap.fromFree - heap.from) - (heap.toNext - heap.to), (heap.fromFree - heap.from) - (heap.toNext - heap.to), heap.size);
 
   swap(&heap.from, &heap.to);
   heap.fromFree = heap.toNext;
