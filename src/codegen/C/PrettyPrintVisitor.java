@@ -415,7 +415,9 @@ public class PrettyPrintVisitor implements Visitor
     this.sayln("");
     
     this.sayln("  memset(&__GC_frame, 0, sizeof(__GC_frame));");
-    this.sayln("  fprintf(stderr, \"@@@prev: %x " + m.id + "\\n\", prev);");
+//    this.sayln("  fprintf(stderr, \"@@@prev: %x " + m.id + "\\n\", prev);");
+    this.sayln("  fprintf(stderr, \"========================================>>>>>>>>>>>>>>>>>> method " + m.id + " start\\n\");");
+    
     this.sayln("  __GC_frame.__gc_prev = prev;");
     this.sayln("  prev = &__GC_frame; ");
     this.sayln("  __GC_frame.arguments_gc_map = " + this.methodId + "_args_gc_map;");
@@ -428,6 +430,8 @@ public class PrettyPrintVisitor implements Visitor
       s.accept(this);
     
     this.sayln("  prev = __GC_frame.__gc_prev;"); /* YKG. It takes me TWO DAYS debugging!!!! */
+    
+    this.sayln("  fprintf(stderr, \"========================================<<<<<<<<<<<<<<<<<<< method " + m.id + " leave\\n\");");
     this.say("  return ");
     m.retExp.accept(this);
     this.sayln(";");
