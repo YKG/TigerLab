@@ -366,14 +366,14 @@ public class PrettyPrintVisitor implements Visitor
     	}
     }
     this.sayln("char *" + this.methodId + "_args_gc_map = \"" + arguments_gc_map + "\";");
-    this.sayln("char *" + this.methodId + "_locals_gc_map = \"" + locals_gc_map + "\";");
+//    this.sayln("char *" + this.methodId + "_locals_gc_map = \"" + locals_gc_map + "\";");
     
     // struct f_gc_frame
     this.sayln("struct " + this.methodId +"_gc_frame{");
     this.sayln("  void *__gc_prev;                      // dynamic chain, pointing to f's caller's GC frame");
     this.sayln("  char *arguments_gc_map;         // should be assigned the value of \"f_arguments_gc_map\"");
     this.sayln("  int *arguments_base_address;    // address of the first argument");
-    this.sayln("  char *locals_gc_map;            // should be assigned the value of \"f_locals_gc_map\"");
+//    this.sayln("  char *locals_gc_map;            // should be assigned the value of \"f_locals_gc_map\"");
     this.sayln("  int localRefCount;");
     for (codegen.C.dec.T d : m.locals) {
         codegen.C.dec.Dec dec = (codegen.C.dec.Dec) d;
@@ -414,16 +414,20 @@ public class PrettyPrintVisitor implements Visitor
     }
     this.sayln("");
     
+    this.sayln("  memset(&__GC_frame, 0, sizeof(__GC_frame));");
+    this.sayln("  fprintf(stderr, \"@@@prev: %x " + m.id + "\\n\", prev);");
     this.sayln("  __GC_frame.__gc_prev = prev;");
     this.sayln("  prev = &__GC_frame; ");
     this.sayln("  __GC_frame.arguments_gc_map = " + this.methodId + "_args_gc_map;");
     this.sayln("  __GC_frame.arguments_base_address = (int *)&this;");
-    this.sayln("  __GC_frame.locals_gc_map = " + this.methodId + "_locals_gc_map;");
+//    this.sayln("  __GC_frame.locals_gc_map = " + this.methodId + "_locals_gc_map;");
     this.sayln("  __GC_frame.localRefCount = " + this.localRefs.size() + ";");
     this.sayln("");
     
     for (codegen.C.stm.T s : m.stms)
       s.accept(this);
+    
+    this.sayln("  prev = __GC_frame.__gc_prev;"); /* YKG. It takes me TWO DAYS debugging!!!! */
     this.say("  return ");
     m.retExp.accept(this);
     this.sayln(";");
@@ -539,6 +543,7 @@ public class PrettyPrintVisitor implements Visitor
     this.sayln("// include");
     this.sayln("#include <stdio.h>");
     this.sayln("#include <stdlib.h>\n");
+    this.sayln("#include <string.h>\n");
     
     this.sayln("// structures");
     for (codegen.C.classs.T c : p.classes) {

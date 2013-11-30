@@ -165,10 +165,10 @@ public class Tiger
     // auto test
     switch (control.Control.codegen) {
     case Bytecode:
-      autoTestBytecode(fname);
+//      autoTestBytecode(fname);
       break;
     case C:
-      autoTestC(fname);
+//      autoTestC(fname);
       break;
     case Dalvik:
       break;
@@ -240,7 +240,8 @@ public class Tiger
 	    
 	    try{
 	    	String exeFileName = fname.substring(0, fname.lastIndexOf('.')) + ".exe";
-	    	String command = "gcc ../runtime/runtime.c " + fname+".c" + " -o " + exeFileName;
+	    	String command = "gcc runtime/runtime.c " + fname+".c" + " -o " + exeFileName;
+//	    	String command = "gcc ../runtime/runtime.c " + fname+".c" + " -o " + exeFileName;
 //	    	System.out.println("exec: " + command);
 	    	Process p = Runtime.getRuntime().exec(new String[]{"cmd", "/c", command});
 	    	p.waitFor();
@@ -256,19 +257,32 @@ public class Tiger
 			while ((line = err.readLine()) != null) {
 				System.out.println(line);  
 			}
+			in.close();			
+			
+			p.destroy();
 			
 	    	
-//	    	System.out.println("exec: " + exeFileName);
-	    	p = Runtime.getRuntime().exec(new String[]{"cmd", "/c", ".\\"+exeFileName});
-	    	p.waitFor();
+			
+	    	System.out.println("exec: " + exeFileName);
+	    	System.out.println("exec: test\\BinarySearch.exe " + exeFileName);
+	    	
+//	    	p = Runtime.getRuntime().exec(new String[]{"cmd", "/c", exeFileName.replaceAll("/", "\\\\")});
+	    	Process ppt = Runtime.getRuntime().exec(new String[]{"cmd", "/c", "test\\BinarySearch.exe"});
+	    	System.out.println("1111122333exec: " + exeFileName);
+//	    	p = Runtime.getRuntime().exec(new String[]{"cmd", "/c", "test\\a.exe"});
+	    	ppt.waitFor();
+	    	System.out.println("1111122exec: " + exeFileName);
 	    	in = new BufferedReader(  
-	                new InputStreamReader(p.getInputStream()));  
+	                new InputStreamReader(ppt.getInputStream()));  
 			line = null;
+			System.out.println("dddd1111122exec: " + exeFileName);
 			while ((line = in.readLine()) != null) {
+				System.out.println("11111221111exec: " + exeFileName);
 				System.out.println(line);  
 			}
+			System.out.println("11111exec: " + exeFileName);
 			err = new BufferedReader(  
-	                new InputStreamReader(p.getErrorStream()));
+	                new InputStreamReader(ppt.getErrorStream()));
 			line = null;
 			while ((line = err.readLine()) != null) {
 				System.out.println(line);  
