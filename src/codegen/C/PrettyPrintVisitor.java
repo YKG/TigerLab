@@ -165,14 +165,16 @@ public class PrettyPrintVisitor implements Visitor
   @Override
   public void visit(codegen.C.exp.NewObject e)
   {
-	if(this.localRefs.contains(e.name)){
-		e.name = "__GC_frame." + e.name;
-	}
+//	if(this.localRefs.contains(e.name)){
+//		e.name = "__GC_frame." + e.name;
+//	}
 	if(this.localRefs.contains(e.id)){
 		e.id = "__GC_frame." + e.id;		/* YKG. Is it reachable? */
 	}
-    this.say("(" + e.name + " = (struct " + e.id + "*)(Tiger_new (&" + e.id
-        + "_vtable_, sizeof(struct " + e.id + "))), " + e.name + ")");
+//    this.say("(" + e.name + " = (struct " + e.id + "*)(Tiger_new (&" + e.id
+//        + "_vtable_, sizeof(struct " + e.id + "))), " + e.name + ")");
+    this.say("((struct " + e.id + "*)(Tiger_new (&" + e.id
+            + "_vtable_, sizeof(struct " + e.id + "))))");
     return;
   }
 
