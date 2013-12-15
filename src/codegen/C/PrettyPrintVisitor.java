@@ -533,9 +533,9 @@ public class PrettyPrintVisitor implements Visitor
       if (Control.outputName != null)
         outputName = Control.outputName;
       else if (Control.fileName != null)
-        outputName = Control.fileName + ".c";
+        outputName = Control.fileName + ".c.c";
       else
-        outputName = "a.c";
+        outputName = "a.c.c";
 
       this.writer = new java.io.BufferedWriter(new java.io.OutputStreamWriter(
           new java.io.FileOutputStream(outputName)));

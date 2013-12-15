@@ -1,67 +1,134 @@
 import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 
 import lexer.Lexer;
 import lexer.Token;
 import lexer.Token.Kind;
-import parser.Parser;
+
 import control.CommandLine;
 import control.Control;
 
+import parser.Parser;
+
 public class Tiger
 {
-  public static void main(String[] args)
+  static Tiger tiger;
+  static CommandLine cmd;
+  static InputStream fstream;
+  public ast.program.T theAst;
+
+  // lex and parse
+  private void lexAndParse(String fname)
   {
-    InputStream fstream;
     Parser parser;
 
-    // ///////////////////////////////////////////////////////
-    // handle command line arguments
-    CommandLine cmd = new CommandLine();
-    String fname = cmd.scan(args);
+    try {
+      fstream = new BufferedInputStream(new FileInputStream(fname));
+      parser = new Parser(fname, fstream);
+
+      theAst = parser.parse();
+
+      fstream.close();
+    } catch (Exception e) {
+      e.printStackTrace();
+      System.exit(1);
+    }
+    return;
+  }
+
+  public void compile(String fname)
+  {
 
     // /////////////////////////////////////////////////////
     // to test the pretty printer on the "test/Fac.java" program
     if (control.Control.testFac) {
-      System.out.println("Testing the Tiger compiler on Fac.java starting:");
       ast.PrettyPrintVisitor pp = new ast.PrettyPrintVisitor();
-      ast.Fac.prog.accept(pp);
+      control.CompilerPass ppPass = new control.CompilerPass(
+          "Pretty printing AST", ast.Fac.prog, pp);
+      // ppPass.doit();
 
       // elaborate the given program, this step is necessary
       // for that it will annotate the AST with some
       // informations used by later phase.
       elaborator.ElaboratorVisitor elab = new elaborator.ElaboratorVisitor();
-      ast.Fac.prog.accept(elab);
+      control.CompilerPass elabPass = new control.CompilerPass(
+          "Elaborating the AST", ast.Fac.prog, elab);
+      elabPass.doit();
+
+      // optimize the AST
+      ast.optimizations.Main optAstPasses = new ast.optimizations.Main();
+      control.CompilerPass optAstPass = new control.CompilerPass(
+          "Optimizing AST", optAstPasses, ast.Fac.prog);
+      optAstPass.doit();
+      ast.Fac.prog = (ast.program.Program) optAstPasses.program;
 
       // Compile this program to C.
-      System.out.println("code generation starting");
-   // code generation
+      codegen.C.TranslateVisitor transC = new codegen.C.TranslateVisitor();
+      control.CompilerPass genCCodePass = new control.CompilerPass(
+          "Translation to C code", ast.Fac.prog, transC);
+      genCCodePass.doit();
+      codegen.C.program.T cAst = transC.program;
+
+      if (control.Control.dumpC) {
+        codegen.C.PrettyPrintVisitor ppC = new codegen.C.PrettyPrintVisitor();
+        control.CompilerPass ppCCodePass = new control.CompilerPass(
+            "C code printing", cAst, ppC);
+        ppCCodePass.doit();
+      }
+
+      // translation to control-flow graph
+      cfg.TranslateVisitor transCfg = new cfg.TranslateVisitor();
+      control.CompilerPass genCfgCodePass = new control.CompilerPass(
+          "Control-flow graph generation", cAst, transCfg);
+      genCfgCodePass.doit();
+      cfg.program.T cfgAst = transCfg.program;
+
+      // visualize the control-flow graph, if necessary
+      if (control.Control.visualize != Control.Visualize_Kind_t.None) {
+        cfg.VisualVisitor toDot = new cfg.VisualVisitor();
+        control.CompilerPass genDotPass = new control.CompilerPass(
+            "Draw control-flow graph", cfgAst, toDot);
+        genDotPass.doit();
+      }
+
+      // optimizations on the control-flow graph
+      cfg.optimizations.Main cfgOpts = new cfg.optimizations.Main();
+      control.CompilerPass cfgOptPass = new control.CompilerPass(
+          "Control-flow graph optimizations", cfgOpts, cfgAst);
+      cfgOptPass.doit();
+
+      // code generation
       switch (control.Control.codegen) {
       case Bytecode:
-        System.out.println("bytecode codegen");            
         codegen.bytecode.TranslateVisitor trans = new codegen.bytecode.TranslateVisitor();
-        ast.Fac.prog.accept(trans);
+        control.CompilerPass genBytecodePass = new control.CompilerPass(
+            "Bytecode generation", ast.Fac.prog, trans);
+        genBytecodePass.doit();
         codegen.bytecode.program.T bytecodeAst = trans.program;
+
         codegen.bytecode.PrettyPrintVisitor ppbc = new codegen.bytecode.PrettyPrintVisitor();
-        bytecodeAst.accept(ppbc);
+        control.CompilerPass ppBytecodePass = new control.CompilerPass(
+            "Bytecode printing", bytecodeAst, ppbc);
+        ppBytecodePass.doit();
         break;
       case C:
-        System.out.println("C codegen");
-        codegen.C.TranslateVisitor transC = new codegen.C.TranslateVisitor();
-        ast.Fac.prog.accept(transC);
-        codegen.C.program.T cAst = transC.program;
-        codegen.C.PrettyPrintVisitor ppc = new codegen.C.PrettyPrintVisitor();
-        cAst.accept(ppc);
+        cfg.PrettyPrintVisitor ppCfg = new cfg.PrettyPrintVisitor();
+        control.CompilerPass ppCfgCodePass = new control.CompilerPass(
+            "C code printing", cfgAst, ppCfg);
+        ppCfgCodePass.doit();
         break;
       case Dalvik:
-//        codegen.dalvik.TranslateVisitor transDalvik = new codegen.dalvik.TranslateVisitor();
-//        ast.Fac.prog.accept(transDalvik);
-//        codegen.dalvik.program.T dalvikAst = transDalvik.program;
-//        codegen.dalvik.PrettyPrintVisitor ppDalvik = new codegen.dalvik.PrettyPrintVisitor();
-//        dalvikAst.accept(ppDalvik);
+        codegen.dalvik.TranslateVisitor transDalvik = new codegen.dalvik.TranslateVisitor();
+        control.CompilerPass genDalvikCodePass = new control.CompilerPass(
+            "Dalvik code generation", ast.Fac.prog, transDalvik);
+        genDalvikCodePass.doit();
+        codegen.dalvik.program.T dalvikAst = transDalvik.program;
+
+        codegen.dalvik.PrettyPrintVisitor ppDalvik = new codegen.dalvik.PrettyPrintVisitor();
+        control.CompilerPass ppDalvikCodePass = new control.CompilerPass(
+            "Dalvik code printing", dalvikAst, ppDalvik);
+        ppDalvikCodePass.doit();
         break;
       case X86:
         // similar
@@ -69,8 +136,7 @@ public class Tiger
       default:
         break;
       }
-      System.out.println("Testing the Tiger compiler on Fac.java finished.");
-      System.exit(1);
+      return;
     }
 
     if (fname == null) {
@@ -103,51 +169,68 @@ public class Tiger
     // normal compilation phases.
     ast.program.T theAst = null;
 
-    // parsing the file, get an AST.
-    try {
-      fstream = new BufferedInputStream(new FileInputStream(fname));
-      parser = new Parser(fname, fstream);
-
-      theAst = parser.parse();
-
-      fstream.close();
-    } catch (Exception e) {
-      e.printStackTrace();
-      System.exit(1);
-    }
+    control.CompilerPass lexAndParsePass = new control.CompilerPass(
+        "Lex and parse", tiger, fname);
+    lexAndParsePass.doitName("lexAndParse");
 
     // pretty printing the AST, if necessary
     if (control.Control.dumpAst) {
       ast.PrettyPrintVisitor pp = new ast.PrettyPrintVisitor();
-      theAst.accept(pp);
+      control.CompilerPass ppAstPass = new control.CompilerPass(
+          "Pretty printing the AST", theAst, pp);
+      ppAstPass.doit();
     }
 
     // elaborate the AST, report all possible errors.
     elaborator.ElaboratorVisitor elab = new elaborator.ElaboratorVisitor();
-    theAst.accept(elab);
+    control.CompilerPass elabAstPass = new control.CompilerPass(
+        "Elaborating the AST", theAst, elab);
+    elabAstPass.doit();
+
+    // optimize the AST
+    ast.optimizations.Main optAstPasses = new ast.optimizations.Main();
+    control.CompilerPass optAstPass = new control.CompilerPass(
+        "Optimizing the AST", optAstPasses, theAst);
+    optAstPass.doitName("doit");
+    theAst = optAstPasses.program;
 
     // code generation
     switch (control.Control.codegen) {
     case Bytecode:
       codegen.bytecode.TranslateVisitor trans = new codegen.bytecode.TranslateVisitor();
-      theAst.accept(trans);
+      control.CompilerPass genBytecodePass = new control.CompilerPass(
+          "Bytecode generation", theAst, trans);
+      genBytecodePass.doit();
       codegen.bytecode.program.T bytecodeAst = trans.program;
+
       codegen.bytecode.PrettyPrintVisitor ppbc = new codegen.bytecode.PrettyPrintVisitor();
-      bytecodeAst.accept(ppbc);
+      control.CompilerPass ppBytecodePass = new control.CompilerPass(
+          "Bytecode printing", bytecodeAst, ppbc);
+      ppBytecodePass.doit();
       break;
     case C:
       codegen.C.TranslateVisitor transC = new codegen.C.TranslateVisitor();
-      theAst.accept(transC);
+      control.CompilerPass genCCodePass = new control.CompilerPass(
+          "C code generation", theAst, transC);
+      genCCodePass.doit();
       codegen.C.program.T cAst = transC.program;
+
       codegen.C.PrettyPrintVisitor ppc = new codegen.C.PrettyPrintVisitor();
-      cAst.accept(ppc);
+      control.CompilerPass ppCCodePass = new control.CompilerPass(
+          "C code printing", cAst, ppc);
+      ppCCodePass.doit();
       break;
     case Dalvik:
-//      codegen.dalvik.TranslateVisitor transDalvik = new codegen.dalvik.TranslateVisitor();
-//      theAst.accept(transDalvik);
-//      codegen.dalvik.program.T dalvikAst = transDalvik.program;
-//      codegen.dalvik.PrettyPrintVisitor ppDalvik = new codegen.dalvik.PrettyPrintVisitor();
-//      dalvikAst.accept(ppDalvik);
+      codegen.dalvik.TranslateVisitor transDalvik = new codegen.dalvik.TranslateVisitor();
+      control.CompilerPass genDalvikCodePass = new control.CompilerPass(
+          "Dalvik code generation", theAst, transDalvik);
+      genDalvikCodePass.doit();
+      codegen.dalvik.program.T dalvikAst = transDalvik.program;
+
+      codegen.dalvik.PrettyPrintVisitor ppDalvik = new codegen.dalvik.PrettyPrintVisitor();
+      control.CompilerPass ppDalvikCodePass = new control.CompilerPass(
+          "Dalvik code printing", dalvikAst, ppDalvik);
+      ppDalvikCodePass.doit();
       break;
     case X86:
       // similar
@@ -155,141 +238,52 @@ public class Tiger
     default:
       break;
     }
-    
-    // Lab3, exercise 6: add some glue code to
-    // call gcc to compile the generated C or x86
-    // file, or call java to run the bytecode file,
-    // or dalvik to run the dalvik bytecode.
-    // Your code here:
-    
-    // auto test
-    switch (control.Control.codegen) {
-    case Bytecode:
-//      autoTestBytecode(fname);
-      break;
-    case C:
-//      autoTestC(fname);
-      break;
-    case Dalvik:
-      break;
-    case X86:
-      break;
-    default:
-      break;
-    }
-    
+
     return;
   }
-  
-  private static void autoTestBytecode(String fname)
+
+  public void assemble(String str)
   {
-	  if(System.getProperty("os.name").toLowerCase().indexOf("win") < 0){
-	    	System.err.println("Sorry! The following glue code works ONLY on Windows.");
-	    	return;
-	    }
-	    try{
-	    	String className = fname.substring(0, fname.lastIndexOf('.'));
-	    	String command = "java -jar ../jasmin.jar " + className + ".j";
-//	    	System.out.println("exec: " + command);
-	    	Process p = Runtime.getRuntime().exec(new String[]{"cmd", "/c", command});
-	    	p.waitFor();
-	    	
-	    	BufferedReader in = new BufferedReader(  
-	                new InputStreamReader(p.getInputStream()));  
-	    	
-	    	String line = null;  
-			while ((line = in.readLine()) != null) {
-//				System.out.println(line);  
-			}
-			
-			BufferedReader err = new BufferedReader(  
-	                new InputStreamReader(p.getErrorStream()));  
-			line = null;  
-			while ((line = err.readLine()) != null) {
-				System.out.println(line);  
-			}
-			
-			
-	    	command = "java " + className;
-//	    	System.out.println("exec: " + command);
-	    	p = Runtime.getRuntime().exec(new String[]{"cmd", "/c", command});
-	    	p.waitFor();	    	
-	    	in = new BufferedReader(  
-	                new InputStreamReader(p.getInputStream()));  
-			line = null;
-			while ((line = in.readLine()) != null) {
-				System.out.println(line);  
-			}
-			err = new BufferedReader(  
-	                new InputStreamReader(p.getErrorStream()));
-			line = null;
-			while ((line = err.readLine()) != null) {
-				System.out.println(line);  
-			}
-	    }catch(Exception e){
-	    	e.printStackTrace();
-	    }
+    // Your code here:
   }
-  
-  private static void autoTestC(String fname)
+
+  public void link(String str)
   {
-	  if(System.getProperty("os.name").toLowerCase().indexOf("win") < 0){
-	    	System.err.println("Sorry! The following glue code works ONLY on Windows.");
-	    	return;
-	    }
-	    
-	    try{
-	    	String exeFileName = fname.substring(0, fname.lastIndexOf('.')) + ".exe";
-	    	String command = "gcc runtime/runtime.c " + fname+".c" + " -o " + exeFileName;
-//	    	String command = "gcc ../runtime/runtime.c " + fname+".c" + " -o " + exeFileName;
-//	    	System.out.println("exec: " + command);
-	    	Process p = Runtime.getRuntime().exec(new String[]{"cmd", "/c", command});
-	    	p.waitFor();
-	    	BufferedReader in = new BufferedReader(  
-	                new InputStreamReader(p.getInputStream()));  
-			String line = null;  
-			while ((line = in.readLine()) != null) {
-				System.out.println(line);  
-			}
-			BufferedReader err = new BufferedReader(  
-	                new InputStreamReader(p.getErrorStream()));  
-			line = null;  
-			while ((line = err.readLine()) != null) {
-				System.out.println(line);  
-			}
-			in.close();			
-			
-			p.destroy();
-			
-	    	
-			
-	    	System.out.println("exec: " + exeFileName);
-	    	System.out.println("exec: test\\BinarySearch.exe " + exeFileName);
-	    	
-//	    	p = Runtime.getRuntime().exec(new String[]{"cmd", "/c", exeFileName.replaceAll("/", "\\\\")});
-	    	Process ppt = Runtime.getRuntime().exec(new String[]{"cmd", "/c", "test\\BinarySearch.exe"});
-	    	System.out.println("1111122333exec: " + exeFileName);
-//	    	p = Runtime.getRuntime().exec(new String[]{"cmd", "/c", "test\\a.exe"});
-	    	ppt.waitFor();
-	    	System.out.println("1111122exec: " + exeFileName);
-	    	in = new BufferedReader(  
-	                new InputStreamReader(ppt.getInputStream()));  
-			line = null;
-			System.out.println("dddd1111122exec: " + exeFileName);
-			while ((line = in.readLine()) != null) {
-				System.out.println("11111221111exec: " + exeFileName);
-				System.out.println(line);  
-			}
-			System.out.println("11111exec: " + exeFileName);
-			err = new BufferedReader(  
-	                new InputStreamReader(ppt.getErrorStream()));
-			line = null;
-			while ((line = err.readLine()) != null) {
-				System.out.println(line);  
-			}
-	    }catch(Exception e){
-	    	e.printStackTrace();
-	    }	  
+    // Your code here:
   }
-  
+
+  public void compileAndLink(String fname)
+  {
+    // compile
+    control.CompilerPass compilePass = new control.CompilerPass("Compile",
+        tiger, fname);
+    compilePass.doitName("compile");
+
+    // assembling
+    control.CompilerPass assemblePass = new control.CompilerPass("Assembling",
+        tiger, fname);
+    assemblePass.doitName("assemble");
+
+    // linking
+    control.CompilerPass linkPass = new control.CompilerPass("Linking", tiger,
+        fname);
+    linkPass.doitName("link");
+
+    return;
+  }
+
+  public static void main(String[] args)
+  {
+    // ///////////////////////////////////////////////////////
+    // handle command line arguments
+    tiger = new Tiger();
+    cmd = new CommandLine();
+    String fname = "";
+    fname = cmd.scan(args);
+
+    control.CompilerPass tigerAll = new control.CompilerPass("Tiger", tiger,
+        fname);
+    tigerAll.doitName("compileAndLink");
+    return;
+  }
 }

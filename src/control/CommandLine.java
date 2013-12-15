@@ -74,6 +74,15 @@ public class CommandLine
             if (s.equals("ast")) {
               control.Control.dumpAst = true;
             } 
+            else if (s.equals("c")||s.equals("C")){
+              control.Control.dumpC = true;
+            }
+            else if (s.equals("cyclone")){
+              control.Control.dumpCyclone = true;
+            }
+            else if (s.equals("dot")){
+              control.Control.dumpDot = true;
+            }
             else {
               System.out.println("bad argument: " + s);
               output();
@@ -124,8 +133,16 @@ public class CommandLine
             Control.outputName = (String)s;
             return;
           }
+        }), new Arg<Object>("skip", "<pass>", "which compile pass to skip",
+        Kind.String, new F<Object>() {
+          @Override
+          public void f(Object s)
+          {
+            Control.addPass((String)s);
+            return;
+          }
         }), new Arg<Object>("testFac", null,
-        "whether or not to test the Tiger compiler on Fac.java", Kind.Empty, new F<Object>() {
+        "whether or not to test Fac.java", Kind.Empty, new F<Object>() {
           @Override
           public void f(Object s)
           {
@@ -140,7 +157,60 @@ public class CommandLine
             Control.testlexer = true;
             return;
           }
-        }));
+        }), new Arg<Object>("trace", "<method>", "which method to trace",
+        Kind.String, new F<Object>() {
+          @Override
+          public void f(Object s)
+          {
+            Control.addTrace((String)s);
+            return;
+          }
+        }), new Arg<Object>("verbose", "{0|1|2}", "how verbose to be",
+        Kind.Int, new F<Object>() {
+          @Override
+          public void f(Object n)
+          {
+            int i = (Integer)n;
+            switch (i){
+            case 0:
+              Control.verbose = Control.Verbose_t.Silent;
+              break;
+            case 1:
+              Control.verbose = Control.Verbose_t.Pass;
+              break;
+            default:
+              Control.verbose = Control.Verbose_t.Detailed;
+              break;            
+            }
+            return;
+          }
+        }), new Arg<Object>("visualize",
+            "<bmp|pdf|ps|jpg>", "to visualize a graph", Kind.String,
+            new F<Object>() {
+              @Override
+              public void f(Object ss)
+              {
+                String s = (String) ss;
+                if (s.equals("bmp")) {
+                  control.Control.visualize = control.Control.Visualize_Kind_t.Bmp;
+                } 
+                else if (s.equals("pdf")){
+                  control.Control.visualize = control.Control.Visualize_Kind_t.Pdf;
+                }
+                else if (s.equals("ps")){
+                  control.Control.visualize = control.Control.Visualize_Kind_t.Ps;
+                }
+                else if (s.equals("jpg")){
+                  control.Control.visualize = control.Control.Visualize_Kind_t.Jpg;
+                }
+                else {
+                  System.out.println("bad argument: " + s);
+                  output();
+                  System.exit(1);
+                }
+                return;
+              }
+            }));
   }
 
   // scan the command line arguments, return the file name
@@ -252,7 +322,7 @@ public class CommandLine
     System.out.println("Available options:");
     for (Arg<Object> a : this.args) {
       int current = a.name.length();
-      System.out.print("-" + a.name + " ");
+      System.out.print("   -" + a.name + " ");
       if (a.option != null) {
         current += a.option.length();
         System.out.print(a.option);
