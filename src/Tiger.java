@@ -19,7 +19,8 @@ public class Tiger
   public ast.program.T theAst;
 
   // lex and parse
-  private void lexAndParse(String fname)
+  //private void lexAndParse(String fname) /* YKG. Private method would not be found by invoke getMethods() */
+  public void lexAndParse(String fname)
   {
     Parser parser;
 
@@ -167,7 +168,7 @@ public class Tiger
 
     // /////////////////////////////////////////////////////////
     // normal compilation phases.
-    ast.program.T theAst = null;
+//    ast.program.T theAst = null;
 
     control.CompilerPass lexAndParsePass = new control.CompilerPass(
         "Lex and parse", tiger, fname);

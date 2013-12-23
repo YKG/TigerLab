@@ -1,5 +1,7 @@
 package ast.optimizations;
 
+import ast.exp.Block;
+
 // Dead code elimination optimizations on an AST.
 
 public class DeadCode implements ast.Visitor
@@ -217,4 +219,10 @@ public class DeadCode implements ast.Visitor
     }
     return;
   }
+
+@Override
+public void visit(Block e) {
+	// TODO Auto-generated method stub
+	System.err.println("HELP!!");
+}
 }

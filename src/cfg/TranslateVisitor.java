@@ -1,5 +1,7 @@
 package cfg;
 
+import codegen.C.exp.Block;
+
 // Traverse the C AST, and generate
 // a control-flow graph.
 public class TranslateVisitor implements codegen.C.Visitor
@@ -414,4 +416,10 @@ public class TranslateVisitor implements codegen.C.Visitor
         newMainMethod);
     return;
   }
+
+@Override
+public void visit(Block block) {
+	// TODO Auto-generated method stub
+	System.err.println("HELP!!");
+}
 }

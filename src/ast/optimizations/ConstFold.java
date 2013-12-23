@@ -1,5 +1,7 @@
 package ast.optimizations;
 
+import ast.exp.Block;
+
 // Constant folding optimizations on an AST.
 
 public class ConstFold implements ast.Visitor
@@ -217,4 +219,10 @@ public class ConstFold implements ast.Visitor
     }
     return;
   }
+
+@Override
+public void visit(Block e) {
+	// TODO Auto-generated method stub
+	System.err.println("HELP!!");
+}
 }

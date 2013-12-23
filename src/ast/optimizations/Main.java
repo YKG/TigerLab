@@ -4,7 +4,7 @@ public class Main
 {
   public ast.program.T program;
   
-  public void accept(ast.program.T ast)
+  public void doit(ast.program.T ast)
   {
     DeadClass dceVisitor = new DeadClass();
     control.CompilerPass deadClassPass = new control.CompilerPass(
