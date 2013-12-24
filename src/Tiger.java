@@ -1,14 +1,13 @@
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
 import lexer.Lexer;
 import lexer.Token;
 import lexer.Token.Kind;
-
 import control.CommandLine;
 import control.Control;
-
 import parser.Parser;
 
 public class Tiger
@@ -61,7 +60,7 @@ public class Tiger
       ast.optimizations.Main optAstPasses = new ast.optimizations.Main();
       control.CompilerPass optAstPass = new control.CompilerPass(
           "Optimizing AST", optAstPasses, ast.Fac.prog);
-      optAstPass.doit();
+      optAstPass.doitName("doit");
       ast.Fac.prog = (ast.program.Program) optAstPasses.program;
 
       // Compile this program to C.
@@ -216,10 +215,38 @@ public class Tiger
       genCCodePass.doit();
       codegen.C.program.T cAst = transC.program;
 
-      codegen.C.PrettyPrintVisitor ppc = new codegen.C.PrettyPrintVisitor();
-      control.CompilerPass ppCCodePass = new control.CompilerPass(
-          "C code printing", cAst, ppc);
-      ppCCodePass.doit();
+      if (control.Control.dumpC) {
+          codegen.C.PrettyPrintVisitor ppC = new codegen.C.PrettyPrintVisitor();
+          control.CompilerPass ppCCodePass = new control.CompilerPass(
+              "C code printing", cAst, ppC);
+          ppCCodePass.doit();
+      }
+      
+      // translation to control-flow graph
+      cfg.TranslateVisitor transCfg = new cfg.TranslateVisitor();
+      control.CompilerPass genCfgCodePass = new control.CompilerPass(
+          "Control-flow graph generation", cAst, transCfg);
+      genCfgCodePass.doit();
+      cfg.program.T cfgAst = transCfg.program;
+
+      // visualize the control-flow graph, if necessary
+      if (control.Control.visualize != Control.Visualize_Kind_t.None) {
+        cfg.VisualVisitor toDot = new cfg.VisualVisitor();
+        control.CompilerPass genDotPass = new control.CompilerPass(
+            "Draw control-flow graph", cfgAst, toDot);
+        genDotPass.doit();
+      }
+
+      // optimizations on the control-flow graph
+      cfg.optimizations.Main cfgOpts = new cfg.optimizations.Main();
+      control.CompilerPass cfgOptPass = new control.CompilerPass(
+          "Control-flow graph optimizations", cfgOpts, cfgAst);
+      cfgOptPass.doit();
+      
+      cfg.PrettyPrintVisitor ppCfg = new cfg.PrettyPrintVisitor();
+      control.CompilerPass ppCfgCodePass = new control.CompilerPass(
+          "C code printing", cfgAst, ppCfg);
+      ppCfgCodePass.doit();
       break;
     case Dalvik:
       codegen.dalvik.TranslateVisitor transDalvik = new codegen.dalvik.TranslateVisitor();
@@ -242,7 +269,7 @@ public class Tiger
 
     return;
   }
-
+    
   public void assemble(String str)
   {
     // Your code here:
@@ -281,7 +308,7 @@ public class Tiger
     cmd = new CommandLine();
     String fname = "";
     fname = cmd.scan(args);
-
+    
     control.CompilerPass tigerAll = new control.CompilerPass("Tiger", tiger,
         fname);
     tigerAll.doitName("compileAndLink");

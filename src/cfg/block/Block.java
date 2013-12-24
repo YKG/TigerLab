@@ -1,5 +1,8 @@
 package cfg.block;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+
 import cfg.Visitor;
 
 public class Block extends T
@@ -33,13 +36,9 @@ public class Block extends T
   @Override
   public String toString()
   {
-    StringBuffer strb = new StringBuffer();
-    strb.append(this.label.toString()+":\\n");
-    // Lab5. Your code here:
-    strb.append("Your code here:\\n");
-    
-    
-    return strb.toString();
+    cfg.BlockPrintVisitor bp = new cfg.BlockPrintVisitor();
+    this.accept(bp);
+    return bp.sb.toString();
   }
   
   @Override

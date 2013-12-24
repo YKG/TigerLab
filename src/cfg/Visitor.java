@@ -58,4 +58,16 @@ public interface Visitor
 
   // program
   public void visit(cfg.program.Program p);
+
+	public void visit(cfg.stm.And and);
+	
+	public void visit(cfg.stm.ArraySelect arraySelect);
+	
+	public void visit(cfg.stm.AssignArray assignArray);
+	
+	public void visit(cfg.stm.Length length);
+	
+	public void visit(cfg.stm.NewIntArray newIntArray);
+	
+	public void visit(cfg.stm.Not not);
 }

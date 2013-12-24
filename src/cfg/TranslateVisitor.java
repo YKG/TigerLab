@@ -1,6 +1,6 @@
 package cfg;
 
-import codegen.C.exp.Block;
+import util.Label;
 
 // Traverse the C AST, and generate
 // a control-flow graph.
@@ -91,16 +91,38 @@ public class TranslateVisitor implements codegen.C.Visitor
   @Override
   public void visit(codegen.C.exp.Add e)
   {
+	    String dst = genVar();
+	    e.left.accept(this);
+	    cfg.operand.T left = this.operand;
+	    e.right.accept(this);
+	    emit(new cfg.stm.Add(dst, null, left, this.operand));
+	    this.operand = new cfg.operand.Var(dst);
+	    return;
   }
 
   @Override
   public void visit(codegen.C.exp.And e)
   {
+	    String dst = genVar();
+	    e.left.accept(this);
+	    cfg.operand.T left = this.operand;
+	    e.right.accept(this);
+	    emit(new cfg.stm.And(dst, null, left, this.operand));
+	    this.operand = new cfg.operand.Var(dst);
+	    return;
   }
 
   @Override
   public void visit(codegen.C.exp.ArraySelect e)
   {
+	  String dst = genVar();
+	  e.array.accept(this);
+	  cfg.operand.T array = this.operand;
+	  e.index.accept(this);
+	  cfg.operand.T index = this.operand;
+	  emit(new cfg.stm.ArraySelect(dst, array, index));
+	  this.operand = new cfg.operand.Var(dst);
+	  return;
   }
 
   @Override
@@ -138,6 +160,11 @@ public class TranslateVisitor implements codegen.C.Visitor
   @Override
   public void visit(codegen.C.exp.Length e)
   {
+	    String dst = genVar();
+	    e.array.accept(this);
+	    emit(new cfg.stm.Length(dst, this.operand));
+	    this.operand = new cfg.operand.Var(dst);
+	    return;
   }
 
   @Override
@@ -155,6 +182,11 @@ public class TranslateVisitor implements codegen.C.Visitor
   @Override
   public void visit(codegen.C.exp.NewIntArray e)
   {
+	  	String dst = genVar(new cfg.type.IntArray());
+	  	e.exp.accept(this);
+	    emit(new cfg.stm.NewIntArray(dst, this.operand));
+	    this.operand = new cfg.operand.Var(dst);
+	    return;
   }
 
   @Override
@@ -169,6 +201,12 @@ public class TranslateVisitor implements codegen.C.Visitor
   @Override
   public void visit(codegen.C.exp.Not e)
   {
+	    String dst = genVar();
+	    e.exp.accept(this);
+//	    emit(new cfg.stm.Xor(dst, this.operand, new cfg.operand.Int(1)));
+	    emit(new cfg.stm.Not(dst, this.operand));
+	    this.operand = new cfg.operand.Var(dst);
+	    return;
   }
 
   @Override
@@ -221,11 +259,17 @@ public class TranslateVisitor implements codegen.C.Visitor
   @Override
   public void visit(codegen.C.stm.AssignArray s)
   {
+	  s.index.accept(this);
+	  cfg.operand.T index = this.operand;
+	  s.exp.accept(this);
+	  emit(new cfg.stm.AssignArray(s.id, index, this.operand));
   }
 
   @Override
   public void visit(codegen.C.stm.Block s)
   {
+	  for(codegen.C.stm.T stm : s.stms)
+		  stm.accept(this);
   }
 
   @Override
@@ -255,6 +299,16 @@ public class TranslateVisitor implements codegen.C.Visitor
   @Override
   public void visit(codegen.C.stm.While s)
   {
+	    util.Label tl = new util.Label(), bl = new util.Label(), el = new util.Label();
+	    emit(new cfg.transfer.Goto(tl));
+	    emit(tl);
+	    s.condition.accept(this);
+		emit(new cfg.transfer.If(this.operand, bl, el));
+		emit(bl);
+	    s.body.accept(this);
+	    emit(new cfg.transfer.Goto(tl));
+	    emit(el);
+	    return;
   }
 
   // type
@@ -273,6 +327,7 @@ public class TranslateVisitor implements codegen.C.Visitor
   @Override
   public void visit(codegen.C.type.IntArray t)
   {
+	  this.type = new cfg.type.IntArray();
   }
 
   // dec
@@ -418,8 +473,9 @@ public class TranslateVisitor implements codegen.C.Visitor
   }
 
 @Override
-public void visit(Block block) {
+public void visit(codegen.C.exp.Block block) {
 	// TODO Auto-generated method stub
-	System.err.println("HELP!!");
+//	System.err.println("HELP!!");
+	block.exp.accept(this);
 }
 }

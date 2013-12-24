@@ -1,5 +1,12 @@
 package cfg.optimizations;
 
+import cfg.stm.And;
+import cfg.stm.ArraySelect;
+import cfg.stm.AssignArray;
+import cfg.stm.Length;
+import cfg.stm.NewIntArray;
+import cfg.stm.Not;
+
 public class Cse implements cfg.Visitor
 {
   public cfg.program.T program;
@@ -135,5 +142,41 @@ public class Cse implements cfg.Visitor
   {
     this.program = p;
   }
+
+@Override
+public void visit(And and) {
+	// TODO Auto-generated method stub
+	
+}
+
+@Override
+public void visit(ArraySelect arraySelect) {
+	// TODO Auto-generated method stub
+	
+}
+
+@Override
+public void visit(AssignArray assignArray) {
+	// TODO Auto-generated method stub
+	
+}
+
+@Override
+public void visit(Length length) {
+	// TODO Auto-generated method stub
+	
+}
+
+@Override
+public void visit(NewIntArray newIntArray) {
+	// TODO Auto-generated method stub
+	
+}
+
+@Override
+public void visit(Not not) {
+	// TODO Auto-generated method stub
+	
+}
 
 }

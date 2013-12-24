@@ -198,7 +198,6 @@ public class DeadCode implements ast.Visitor
   @Override
   public void visit(ast.mainClass.MainClass c)
   {
-    
     return;
   }
 
@@ -209,8 +208,8 @@ public class DeadCode implements ast.Visitor
     
  // You should comment out this line of code:
     this.program = p;
-
-    if (control.Control.trace.equals("ast.DeadCode")){
+    
+    if (control.Control.isTracing("ast.DeadCode")){
       System.out.println("before optimization:");
       ast.PrettyPrintVisitor pp = new ast.PrettyPrintVisitor();
       p.accept(pp);
