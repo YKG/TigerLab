@@ -243,10 +243,10 @@ public class Tiger
           "Control-flow graph optimizations", cfgOpts, cfgAst);
       cfgOptPass.doit();
       
-      cfg.PrettyPrintVisitor ppCfg = new cfg.PrettyPrintVisitor();
-      control.CompilerPass ppCfgCodePass = new control.CompilerPass(
-          "C code printing", cfgAst, ppCfg);
-      ppCfgCodePass.doit();
+//      cfg.PrettyPrintVisitor ppCfg = new cfg.PrettyPrintVisitor();
+//      control.CompilerPass ppCfgCodePass = new control.CompilerPass(
+//          "C code printing", cfgAst, ppCfg);
+//      ppCfgCodePass.doit();
       break;
     case Dalvik:
       codegen.dalvik.TranslateVisitor transDalvik = new codegen.dalvik.TranslateVisitor();

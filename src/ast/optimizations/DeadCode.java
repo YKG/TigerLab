@@ -190,7 +190,10 @@ public class DeadCode implements ast.Visitor
   @Override
   public void visit(ast.classs.Class c)
   {
-    
+	this.newClass = new ast.classs.Class(c.id, c.extendss, c.decs, c.methods);
+	for(ast.method.T m : ((ast.classs.Class)this.newClass).methods){
+		m.accept(this);
+	}
     return;
   }
 
@@ -198,6 +201,8 @@ public class DeadCode implements ast.Visitor
   @Override
   public void visit(ast.mainClass.MainClass c)
   {
+	this.mainClass = new ast.mainClass.MainClass(c.id, c.arg, c.stm);
+	((ast.mainClass.MainClass)this.mainClass).stm.accept(this);
     return;
   }
 
@@ -207,7 +212,16 @@ public class DeadCode implements ast.Visitor
   {
     
  // You should comment out this line of code:
-    this.program = p;
+    
+    p.mainClass.accept(this);
+    ast.mainClass.T newMainclass = this.mainClass;
+    
+    java.util.LinkedList<ast.classs.T> newClasses = new java.util.LinkedList<ast.classs.T>();
+    for(ast.classs.T c : p.classes){
+    	c.accept(this);
+    	newClasses.add(this.newClass);
+    }
+    this.program = new ast.program.Program(newMainclass, newClasses);
     
     if (control.Control.isTracing("ast.DeadCode")){
       System.out.println("before optimization:");

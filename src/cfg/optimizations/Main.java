@@ -1,8 +1,13 @@
 package cfg.optimizations;
 
+import cfg.PrettyPrintVisitor;
+
 public class Main
 {
   public cfg.program.T program;
+  
+  private java.util.HashMap<cfg.stm.T, java.util.HashSet<String>> stmLiveIn;
+  private java.util.HashMap<cfg.stm.T, java.util.HashSet<String>> stmLiveOut;
 
   public void accept(cfg.program.T cfg)
   {
@@ -16,16 +21,27 @@ public class Main
       // Export necessary data structures from the
       // liveness analysis.
       // Your code here:
+      this.stmLiveIn = liveness.stmLiveIn;
+      this.stmLiveOut = liveness.stmLiveOut;
     }
 
     // dead-code elimination
     DeadCode deadCode = new DeadCode();
+    deadCode.stmLiveIn = this.stmLiveIn;
+    deadCode.stmLiveOut = this.stmLiveOut;
     control.CompilerPass deadCodePass = new control.CompilerPass(
         "Dead-code elimination", cfg, deadCode);
     if (control.Control.skipPass("cfg.deadCode")) {
     } else {
       deadCodePass.doit();
       cfg = deadCode.program;
+
+      if (control.Control.isTracing("cfg.deadCode")) {
+	      cfg.PrettyPrintVisitor ppCfg = new cfg.PrettyPrintVisitor();
+	      control.CompilerPass ppCfgCodePass = new control.CompilerPass(
+	          "C code printing", cfg, ppCfg);
+	      ppCfgCodePass.doit();
+      }
     }
 
     // reaching definition
