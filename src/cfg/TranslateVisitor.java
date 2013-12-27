@@ -204,7 +204,7 @@ public class TranslateVisitor implements codegen.C.Visitor
 	    String dst = genVar();
 	    e.exp.accept(this);
 //	    emit(new cfg.stm.Xor(dst, this.operand, new cfg.operand.Int(1)));
-	    emit(new cfg.stm.Not(dst, this.operand));
+	    emit(new cfg.stm.Xor(dst, this.operand));
 	    this.operand = new cfg.operand.Var(dst);
 	    return;
   }

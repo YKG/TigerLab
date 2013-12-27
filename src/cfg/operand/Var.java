@@ -16,4 +16,9 @@ public class Var extends T
   {
     v.visit(this);
   }
+  
+  public String toString()
+  {
+	  return id;
+  }
 }

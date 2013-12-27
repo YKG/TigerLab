@@ -19,4 +19,9 @@ public class Length extends T
   {
     v.visit(this);
   }
+  
+  public String getDst()
+  {
+	  return dst;
+  }
 }

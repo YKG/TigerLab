@@ -69,5 +69,5 @@ public interface Visitor
 	
 	public void visit(cfg.stm.NewIntArray newIntArray);
 	
-	public void visit(cfg.stm.Not not);
+	public void visit(cfg.stm.Xor not);
 }

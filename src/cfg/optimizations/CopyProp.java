@@ -5,7 +5,6 @@ import cfg.stm.ArraySelect;
 import cfg.stm.AssignArray;
 import cfg.stm.Length;
 import cfg.stm.NewIntArray;
-import cfg.stm.Not;
 
 public class CopyProp implements cfg.Visitor
 {
@@ -174,7 +173,7 @@ public void visit(NewIntArray newIntArray) {
 }
 
 @Override
-public void visit(Not not) {
+public void visit(cfg.stm.Xor not) {
 	// TODO Auto-generated method stub
 	
 }

@@ -16,4 +16,9 @@ public class Print extends T
   {
     v.visit(this);
   }
+  
+  public String getDst()
+  {
+	  return "";
+  }
 }

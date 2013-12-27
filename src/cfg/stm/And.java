@@ -23,4 +23,9 @@ public class And extends T
   {
     v.visit(this);
   }
+  
+  public String getDst()
+  {
+	  return dst;
+  }
 }

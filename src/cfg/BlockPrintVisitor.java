@@ -347,7 +347,7 @@ public void visit(cfg.stm.NewIntArray newIntArray) {
 }
 
 @Override
-public void visit(cfg.stm.Not not) {
+public void visit(cfg.stm.Xor not) {
 	// TODO Auto-generated method stub
 	
 }

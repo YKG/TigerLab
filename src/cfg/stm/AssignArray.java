@@ -21,4 +21,9 @@ public class AssignArray extends T
   {
     v.visit(this);
   }
+  
+  public String getDst()
+  {
+	  return "";
+  }
 }

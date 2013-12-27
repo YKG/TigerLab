@@ -6,9 +6,17 @@ public class Main
 {
   public cfg.program.T program;
   
+  // gen, kill for statements
+  public java.util.HashMap<cfg.stm.T, java.util.HashSet<String>> stmGen;
+  public java.util.HashMap<cfg.stm.T, java.util.HashSet<String>> stmKill;
+  
   private java.util.HashMap<cfg.stm.T, java.util.HashSet<String>> stmLiveIn;
   private java.util.HashMap<cfg.stm.T, java.util.HashSet<String>> stmLiveOut;
 
+  private java.util.HashMap<cfg.stm.T, java.util.HashSet<cfg.stm.T>> stmReachIn;
+  private java.util.HashMap<cfg.stm.T, java.util.HashSet<cfg.stm.T>> stmReachOut;
+
+  
   public void accept(cfg.program.T cfg)
   {
     // liveness analysis
@@ -21,6 +29,8 @@ public class Main
       // Export necessary data structures from the
       // liveness analysis.
       // Your code here:
+      this.stmGen = liveness.stmGen;
+      this.stmKill = liveness.stmKill;
       this.stmLiveIn = liveness.stmLiveIn;
       this.stmLiveOut = liveness.stmLiveOut;
     }
@@ -46,6 +56,8 @@ public class Main
 
     // reaching definition
     ReachingDefinition reachingDef = new ReachingDefinition();
+    reachingDef.stmGen = this.stmGen;
+    reachingDef.stmKill = this.stmKill;
     control.CompilerPass reachingDefPass = new control.CompilerPass(
         "Reaching definition", cfg, reachingDef);
     if (control.Control.skipPass("cfg.reaching")) {
@@ -53,10 +65,14 @@ public class Main
       reachingDefPass.doit();
       // Export necessary data structures
       // Your code here:
+      this.stmReachIn = reachingDef.stmIn;
+      this.stmReachOut = reachingDef.stmOut;
     }
 
     // constant propagation
     ConstProp constProp = new ConstProp();
+    constProp.stmIn = this.stmReachIn;
+    constProp.stmOut = this.stmReachOut;
     control.CompilerPass constPropPass = new control.CompilerPass(
         "Constant propagation", cfg, constProp);
     if (control.Control.skipPass("cfg.constProp")) {

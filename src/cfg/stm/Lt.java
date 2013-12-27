@@ -23,4 +23,14 @@ public class Lt extends T
   {
     v.visit(this);
   }
+  
+  public String toString()
+  {
+	  return dst + " = " + left + " < " + right;
+  }
+  
+  public String getDst()
+  {
+	  return dst;
+  }
 }

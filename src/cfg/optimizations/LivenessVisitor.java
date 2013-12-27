@@ -21,7 +21,7 @@ public class LivenessVisitor implements cfg.Visitor
   private java.util.HashSet<String> oneTransferKill;
 
   // gen, kill for statements
-  private java.util.HashMap<cfg.stm.T, java.util.HashSet<String>> stmGen;
+  public java.util.HashMap<cfg.stm.T, java.util.HashSet<String>> stmGen;
   public java.util.HashMap<cfg.stm.T, java.util.HashSet<String>> stmKill;
 
   // gen, kill for transfers
@@ -44,6 +44,8 @@ public class LivenessVisitor implements cfg.Visitor
   public java.util.HashMap<cfg.transfer.T, java.util.HashSet<String>> transferLiveIn;
   public java.util.HashMap<cfg.transfer.T, java.util.HashSet<String>> transferLiveOut;
 
+  private java.util.HashSet<cfg.block.T> visited;
+  
   // As you will walk the tree for many times, so
   // it will be useful to recored which is which:
   enum Liveness_Kind_t
@@ -55,6 +57,7 @@ public class LivenessVisitor implements cfg.Visitor
 
   public LivenessVisitor()
   {
+	this.visited = new java.util.HashSet<cfg.block.T>();
 	this.reverseTopoSortBlocks = new java.util.LinkedList<cfg.block.T>();  
 	  
     this.oneStmGen = new java.util.HashSet<>();
@@ -87,33 +90,33 @@ public class LivenessVisitor implements cfg.Visitor
   // /////////////////////////////////////////////////////
   // utilities
 
-  private java.util.HashSet<String> getOneStmGenAndClear()
-  {
-    java.util.HashSet<String> temp = this.oneStmGen;
-    this.oneStmGen = new java.util.HashSet<>();
-    return temp;
-  }
-
-  private java.util.HashSet<String> getOneStmKillAndClear()
-  {
-    java.util.HashSet<String> temp = this.oneStmKill;
-    this.oneStmKill = new java.util.HashSet<>();
-    return temp;
-  }
-
-  private java.util.HashSet<String> getOneTransferGenAndClear()
-  {
-    java.util.HashSet<String> temp = this.oneTransferGen;
-    this.oneTransferGen = new java.util.HashSet<>();
-    return temp;
-  }
-
-  private java.util.HashSet<String> getOneTransferKillAndClear()
-  {
-    java.util.HashSet<String> temp = this.oneTransferKill;
-    this.oneTransferKill = new java.util.HashSet<>();
-    return temp;
-  }
+//  private java.util.HashSet<String> getOneStmGenAndClear()
+//  {
+//    java.util.HashSet<String> temp = this.oneStmGen;
+//    this.oneStmGen = new java.util.HashSet<>();
+//    return temp;
+//  }
+//
+//  private java.util.HashSet<String> getOneStmKillAndClear()
+//  {
+//    java.util.HashSet<String> temp = this.oneStmKill;
+//    this.oneStmKill = new java.util.HashSet<>();
+//    return temp;
+//  }
+//
+//  private java.util.HashSet<String> getOneTransferGenAndClear()
+//  {
+//    java.util.HashSet<String> temp = this.oneTransferGen;
+//    this.oneTransferGen = new java.util.HashSet<>();
+//    return temp;
+//  }
+//
+//  private java.util.HashSet<String> getOneTransferKillAndClear()
+//  {
+//    java.util.HashSet<String> temp = this.oneTransferKill;
+//    this.oneTransferKill = new java.util.HashSet<>();
+//    return temp;
+//  }
 
   // /////////////////////////////////////////////////////
   // operand
@@ -304,7 +307,7 @@ public class LivenessVisitor implements cfg.Visitor
 	    java.util.HashSet<String> oneBlockKill = new java.util.HashSet<String>();
 
 	    if (control.Control.isTracing("liveness.step2")) {
-		    System.out.println("=============new block=========");
+		    System.out.println("=============new block step2=========");
 		    System.out.println(b.toString());
 		    System.out.print("init gen:");
 	        for (String str : this.oneTransferGen) {
@@ -391,12 +394,15 @@ public class LivenessVisitor implements cfg.Visitor
 	  for(cfg.block.T b : blocks){
 		  this.blockTable.put(((cfg.block.Block)b).label, b);
 	  }
+	  this.visited.clear();
 	  dfs(blocks.get(0));
   }
   
   private void dfs(cfg.block.T block)
   {
-	  cfg.block.Block b = (cfg.block.Block)block; 
+	  if(this.visited.contains(block)) return;
+	  this.visited.add(block);
+	  cfg.block.Block b = (cfg.block.Block)block;
 	  if(b.transfer instanceof cfg.transfer.If){
 		  dfs(this.blockTable.get(((cfg.transfer.If)(b.transfer)).truee));
 		  dfs(this.blockTable.get(((cfg.transfer.If)(b.transfer)).falsee));
@@ -406,6 +412,14 @@ public class LivenessVisitor implements cfg.Visitor
 		// return. Do not need to do any processing.  
 	  }
 	  this.reverseTopoSortBlocks.add(block);
+  }
+  
+  private void initBlockInOut(java.util.LinkedList<cfg.block.T> blocks)
+  {
+	  for(cfg.block.T b : blocks){
+		  this.blockLiveIn.put(b, new java.util.HashSet<String>());
+		  this.blockLiveOut.put(b, new java.util.HashSet<String>());
+	  }
   }
   
   private void calculateBlockInOut(cfg.block.Block b)
@@ -430,7 +444,7 @@ public class LivenessVisitor implements cfg.Visitor
 	  this.blockLiveOut.put(b, liveOut);
 	
     if (control.Control.isTracing("liveness.step3")) {
-    	System.out.println("======== new block ============");
+    	System.out.println("======== new block step3 ============");
         System.out.print("\nliveIn, liveOut for block:");
         System.out.println(b.toString());
         System.out.print("\nliveIn is:");
@@ -556,9 +570,11 @@ public class LivenessVisitor implements cfg.Visitor
     // And also you should loop until a fix-point is reached.
     // Your code here:
     this.kind = Liveness_Kind_t.BlockInOut;
+    initBlockInOut(m.blocks);
     reverseTopSort(m.blocks);
-    this.fixpointFlag = true;
-    while(this.fixpointFlag){
+    this.fixpointFlag = false;
+    while(!this.fixpointFlag){
+    	this.fixpointFlag = true;
 	    for (cfg.block.T block : this.reverseTopoSortBlocks) {
 	      block.accept(this);
 	    }
@@ -600,9 +616,11 @@ public class LivenessVisitor implements cfg.Visitor
     // And also you should loop until a fix-point is reached.
     // Your code here:
     this.kind = Liveness_Kind_t.BlockInOut;
+    initBlockInOut(m.blocks);
     reverseTopSort(m.blocks);
-    this.fixpointFlag = true;
-    while(this.fixpointFlag){
+    this.fixpointFlag = false;
+    while(!this.fixpointFlag){
+    	this.fixpointFlag = true;
 	    for (cfg.block.T block : this.reverseTopoSortBlocks) {
 	      block.accept(this);
 	    }
@@ -680,7 +698,7 @@ public void visit(cfg.stm.NewIntArray s) {
 }
 
 @Override
-public void visit(cfg.stm.Not s) {
+public void visit(cfg.stm.Xor s) {
 	this.oneStmKill.add(s.dst);
 	s.exp.accept(this);
 }

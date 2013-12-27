@@ -24,4 +24,9 @@ public class InvokeVirtual extends T
   {
     v.visit(this);
   }
+  
+  public String getDst()
+  {
+	  return dst;
+  }
 }

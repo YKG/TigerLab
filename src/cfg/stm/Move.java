@@ -21,4 +21,13 @@ public class Move extends T
   {
     v.visit(this);
   }
+  
+  public String toString()
+  {
+	  return dst + " = " + src;
+  }
+  public String getDst()
+  {
+	  return dst;
+  }
 }
