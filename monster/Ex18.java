@@ -10,17 +10,18 @@ class Ex18Foo
 {
 	public int foo()
 	{
-		int a;
-		int b;
-		int c;
-		int m;
+		int [] a;
+		int [] b;
+		int [] c;
+		int [] m;
+		int sum;
 
-		m = 1;
+		m = new int[5];
 		c = m;
 		a = c;
 		b = a;
-		c = a + b;
-		
-		return c;
+		sum = a.length + b.length + c.length;
+
+		return sum;
 	}
 }

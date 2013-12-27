@@ -316,40 +316,66 @@ public class BlockPrintVisitor implements Visitor
 
   }
 
+
 @Override
-public void visit(cfg.stm.And and) {
-	// TODO Auto-generated method stub
-	
+public void visit(cfg.stm.And s) {
+    this.printSpaces();
+    this.say(s.dst + " = ");
+    s.left.accept(this);
+    this.say(" && ");
+    s.right.accept(this);
+    this.say(";");
+    return;
 }
 
 @Override
-public void visit(cfg.stm.ArraySelect arraySelect) {
-	// TODO Auto-generated method stub
-	
+public void visit(cfg.stm.ArraySelect s) {
+    this.printSpaces();
+    this.say(s.dst + " = ");
+    s.array.accept(this);
+    this.say("[");
+    s.index.accept(this);
+    this.say("];");
+    return;
 }
 
 @Override
-public void visit(cfg.stm.AssignArray assignArray) {
-	// TODO Auto-generated method stub
-	
+public void visit(cfg.stm.AssignArray s) {
+	this.printSpaces();
+    this.say(s.id);
+    this.say("[");
+    s.index.accept(this);
+    this.say("] = ");
+    s.exp.accept(this);
+    this.say(";");
+    return;
 }
 
 @Override
-public void visit(cfg.stm.Length length) {
-	// TODO Auto-generated method stub
-	
+public void visit(cfg.stm.Length s) {
+	this.printSpaces();
+	this.say(s.dst + " = *(((int *)");
+	s.array.accept(this);
+	this.say(")+2);");
+	return;
 }
 
 @Override
-public void visit(cfg.stm.NewIntArray newIntArray) {
-	// TODO Auto-generated method stub
-	
+public void visit(cfg.stm.NewIntArray s) {
+	  this.printSpaces();
+	  this.say(s.dst + " = ((int *)(Tiger_new_array (");
+	  s.array.accept(this);
+	  this.say(")));");
+	  return;
 }
 
 @Override
-public void visit(cfg.stm.Xor not) {
-	// TODO Auto-generated method stub
-	
+public void visit(cfg.stm.Xor s) {
+    this.printSpaces();
+    this.say(s.dst + " = ");
+    s.exp.accept(this);
+    this.say(" ^ 1;");
+    return;
 }
 
 }

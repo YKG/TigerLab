@@ -83,6 +83,8 @@ public class Main
 
     // copy propagation
     CopyProp copyProp = new CopyProp();
+    copyProp.stmIn = this.stmReachIn;
+    copyProp.stmOut = this.stmReachOut;
     control.CompilerPass copyPropPass = new control.CompilerPass(
         "Copy propagation", cfg, copyProp);
     if (control.Control.skipPass("cfg.copyProp")) {
