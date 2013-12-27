@@ -10,6 +10,9 @@ public class DeadCode implements ast.Visitor
   private ast.mainClass.T mainClass;
   public ast.program.T program;
   
+  public java.util.LinkedList<ast.stm.T> newStms;
+  public ast.method.T newMethod;
+  
   public DeadCode()
   {
     this.newClass = null;
@@ -119,36 +122,48 @@ public class DeadCode implements ast.Visitor
   @Override
   public void visit(ast.stm.Assign s)
   {
-    
+	  this.newStms.add(s);
     return;
   }
 
   @Override
   public void visit(ast.stm.AssignArray s)
   {
+	  this.newStms.add(s);
   }
 
   @Override
   public void visit(ast.stm.Block s)
   {
+	  this.newStms.add(s);
   }
 
   @Override
   public void visit(ast.stm.If s)
   {
-   
+	  if(s.condition instanceof ast.exp.True)
+		  s.thenn.accept(this);
+	  else if(s.condition instanceof ast.exp.False)
+		  s.elsee.accept(this);
+	  else
+		  this.newStms.add(s);
     return;
   }
 
   @Override
   public void visit(ast.stm.Print s)
   {
+	  this.newStms.add(s);
     return;
   }
 
   @Override
   public void visit(ast.stm.While s)
   {
+	  if(s.condition instanceof ast.exp.False)
+		  return;
+	  else
+		  this.newStms.add(s);
   }
 
   // type
@@ -183,6 +198,17 @@ public class DeadCode implements ast.Visitor
   @Override
   public void visit(ast.method.Method m)
   {
+	  this.newStms = new java.util.LinkedList<ast.stm.T>();
+	  for(ast.stm.T s : m.stms){
+		  if(s instanceof ast.stm.If)
+			  s.accept(this);
+		  else if(s instanceof ast.stm.While)
+			  s.accept(this);
+		  else
+			  this.newStms.add(s);
+	  }
+
+	  this.newMethod = new ast.method.Method(m.retType, m.id, m.formals, m.locals, this.newStms, m.retExp);
     return;
   }
 
@@ -190,10 +216,12 @@ public class DeadCode implements ast.Visitor
   @Override
   public void visit(ast.classs.Class c)
   {
-	this.newClass = new ast.classs.Class(c.id, c.extendss, c.decs, c.methods);
-	for(ast.method.T m : ((ast.classs.Class)this.newClass).methods){
+	  java.util.LinkedList<ast.method.T> newMethods = new java.util.LinkedList<ast.method.T>();
+	for(ast.method.T m : c.methods){
 		m.accept(this);
+		newMethods.add(this.newMethod);
 	}
+	this.newClass = new ast.classs.Class(c.id, c.extendss, c.decs, newMethods);
     return;
   }
 
@@ -202,7 +230,7 @@ public class DeadCode implements ast.Visitor
   public void visit(ast.mainClass.MainClass c)
   {
 	this.mainClass = new ast.mainClass.MainClass(c.id, c.arg, c.stm);
-	((ast.mainClass.MainClass)this.mainClass).stm.accept(this);
+//	((ast.mainClass.MainClass)this.mainClass).stm.accept(this);
     return;
   }
 

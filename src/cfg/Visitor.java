@@ -1,5 +1,7 @@
 package cfg;
 
+import cfg.stm.Xor;
+
 public interface Visitor
 {
   // operand
@@ -68,6 +70,7 @@ public interface Visitor
 	public void visit(cfg.stm.Length length);
 	
 	public void visit(cfg.stm.NewIntArray newIntArray);
+
+	void visit(cfg.stm.Xor not);
 	
-	public void visit(cfg.stm.Xor not);
 }

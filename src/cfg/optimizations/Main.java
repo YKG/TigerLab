@@ -102,6 +102,8 @@ public class Main
       availExpPass.doit();
       // Export necessary data structures
       // Your code here:
+      
+      /* YKG. I think I do not need to do this calculation. */
     }
 
     // CSE
