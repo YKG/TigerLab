@@ -1,10 +1,5 @@
 package cfg;
 
-import cfg.stm.And;
-import cfg.stm.ArraySelect;
-import cfg.stm.AssignArray;
-import cfg.stm.Length;
-import cfg.stm.NewIntArray;
 import control.Control;
 
 public class PrettyPrintVisitor implements Visitor

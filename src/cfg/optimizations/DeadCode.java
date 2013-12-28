@@ -1,13 +1,5 @@
 package cfg.optimizations;
 
-import cfg.PrettyPrintVisitor;
-import cfg.block.Block;
-import cfg.stm.And;
-import cfg.stm.ArraySelect;
-import cfg.stm.AssignArray;
-import cfg.stm.Length;
-import cfg.stm.NewIntArray;
-
 public class DeadCode implements cfg.Visitor
 {
   public cfg.program.T program;
@@ -199,37 +191,37 @@ public class DeadCode implements cfg.Visitor
   }
 
 @Override
-public void visit(And and) {
+public void visit(cfg.stm.And s) {
 	// TODO Auto-generated method stub
 	
 }
 
 @Override
-public void visit(ArraySelect arraySelect) {
+public void visit(cfg.stm.ArraySelect s) {
 	// TODO Auto-generated method stub
 	
 }
 
 @Override
-public void visit(AssignArray assignArray) {
+public void visit(cfg.stm.AssignArray s) {
 	// TODO Auto-generated method stub
 	
 }
 
 @Override
-public void visit(Length length) {
+public void visit(cfg.stm.Length s) {
 	// TODO Auto-generated method stub
 	
 }
 
 @Override
-public void visit(NewIntArray newIntArray) {
+public void visit(cfg.stm.NewIntArray s) {
 	// TODO Auto-generated method stub
 	
 }
 
 @Override
-public void visit(cfg.stm.Xor not) {
+public void visit(cfg.stm.Xor s) {
 	// TODO Auto-generated method stub
 	
 }

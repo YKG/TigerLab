@@ -1,6 +1,5 @@
 package cfg.optimizations;
 
-import cfg.PrettyPrintVisitor;
 
 public class Main
 {

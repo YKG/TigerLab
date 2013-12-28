@@ -1,18 +1,17 @@
 package cfg;
 
-import util.Label;
 
 // Traverse the C AST, and generate
 // a control-flow graph.
 public class TranslateVisitor implements codegen.C.Visitor
 {
-  private String classId;
+//  private String classId;
   private cfg.type.T type; // type after translation
   private cfg.operand.T operand;
   private cfg.dec.T dec;
   // A dirty hack. Can hold stm, transfer, or label.
   private java.util.ArrayList<Object> stmOrTransfer;
-  private util.Label entry;
+//  private util.Label entry;
   private java.util.LinkedList<cfg.dec.T> newLocals;
   private cfg.method.T method;
   private cfg.classs.T classs;
@@ -22,7 +21,7 @@ public class TranslateVisitor implements codegen.C.Visitor
 
   public TranslateVisitor()
   {
-    this.classId = null;
+//    this.classId = null;
     this.type = null;
     this.dec = null;
     this.stmOrTransfer = new java.util.ArrayList<Object>();
@@ -396,7 +395,7 @@ public class TranslateVisitor implements codegen.C.Visitor
 
     // a junk label
     util.Label entry = new util.Label();
-    this.entry = entry;
+//    this.entry = entry;
     emit (entry);
     
     for (codegen.C.stm.T s : m.stms)

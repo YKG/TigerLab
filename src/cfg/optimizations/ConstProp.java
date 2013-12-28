@@ -1,11 +1,5 @@
 package cfg.optimizations;
 
-import cfg.stm.And;
-import cfg.stm.ArraySelect;
-import cfg.stm.AssignArray;
-import cfg.stm.Length;
-import cfg.stm.NewIntArray;
-
 public class ConstProp implements cfg.Visitor
 {
   public cfg.program.T program;
@@ -200,7 +194,7 @@ public class ConstProp implements cfg.Visitor
 			  System.out.println(b.toString());
 	  }
 	  
-	  java.util.LinkedList<cfg.block.T> newBlocks = new java.util.LinkedList<cfg.block.T>();
+//	  java.util.LinkedList<cfg.block.T> newBlocks = new java.util.LinkedList<cfg.block.T>();
 	  this.changed = true;
 	  while(this.changed){
 		  this.changed = false;
@@ -227,7 +221,7 @@ public class ConstProp implements cfg.Visitor
 			  System.out.println(b.toString());
 	  }
 	  
-	  java.util.LinkedList<cfg.block.T> newBlocks = new java.util.LinkedList<cfg.block.T>();
+//	  java.util.LinkedList<cfg.block.T> newBlocks = new java.util.LinkedList<cfg.block.T>();
 	  this.changed = true;
 	  while(this.changed){
 		  this.changed = false;
@@ -273,7 +267,7 @@ public class ConstProp implements cfg.Visitor
   }
 
 @Override
-public void visit(And s) {
+public void visit(cfg.stm.And s) {
 	  if(check(s.left, this.stmIn.get(s)))
 		  s.left = this.newOperand;
 	  if(check(s.right, this.stmIn.get(s)))
@@ -281,13 +275,13 @@ public void visit(And s) {
 }
 
 @Override
-public void visit(ArraySelect s) {
+public void visit(cfg.stm.ArraySelect s) {
 	  if(check(s.index, this.stmIn.get(s)))
 		  s.index = this.newOperand;
 }
 
 @Override
-public void visit(AssignArray s) {
+public void visit(cfg.stm.AssignArray s) {
 	  if(check(s.exp, this.stmIn.get(s)))
 		  s.exp = this.newOperand;
 	  if(check(s.index, this.stmIn.get(s)))
@@ -295,11 +289,11 @@ public void visit(AssignArray s) {
 }
 
 @Override
-public void visit(Length s) {
+public void visit(cfg.stm.Length s) {
 }
 
 @Override
-public void visit(NewIntArray s) {
+public void visit(cfg.stm.NewIntArray s) {
 	  if(check(s.array, this.stmIn.get(s)))
 		  s.array = this.newOperand;
 }

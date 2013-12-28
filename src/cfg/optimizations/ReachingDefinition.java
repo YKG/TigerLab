@@ -1,18 +1,14 @@
 package cfg.optimizations;
 
-import java.util.HashSet;
-
-import cfg.optimizations.LivenessVisitor.Liveness_Kind_t;
-
 public class ReachingDefinition implements cfg.Visitor
 {
   // gen, kill for one statement
-  private java.util.HashSet<cfg.stm.T> oneStmGen;
-  private java.util.HashSet<cfg.stm.T> oneStmKill;
+//  private java.util.HashSet<cfg.stm.T> oneStmGen;
+//  private java.util.HashSet<cfg.stm.T> oneStmKill;
 
   // gen, kill for one transfer
-  private java.util.HashSet<cfg.stm.T> oneTransferGen;
-  private java.util.HashSet<cfg.stm.T> oneTransferKill;
+//  private java.util.HashSet<cfg.stm.T> oneTransferGen;
+//  private java.util.HashSet<cfg.stm.T> oneTransferKill;
 
   // gen, kill for statements
   public java.util.HashMap<cfg.stm.T, java.util.HashSet<String>> stmGen;
@@ -23,8 +19,8 @@ public class ReachingDefinition implements cfg.Visitor
 
   
   // gen, kill for transfers
-  private java.util.HashMap<cfg.transfer.T, java.util.HashSet<cfg.stm.T>> transferGen;
-  private java.util.HashMap<cfg.transfer.T, java.util.HashSet<cfg.stm.T>> transferKill;
+//  private java.util.HashMap<cfg.transfer.T, java.util.HashSet<cfg.stm.T>> transferGen;
+//  private java.util.HashMap<cfg.transfer.T, java.util.HashSet<cfg.stm.T>> transferKill;
 
   // gen, kill for blocks
   private java.util.HashMap<cfg.block.T, java.util.HashSet<cfg.stm.T>> blockGen;
@@ -55,17 +51,17 @@ public class ReachingDefinition implements cfg.Visitor
   
   public ReachingDefinition()
   {
-    this.oneStmGen = new java.util.HashSet<>();
-    this.oneStmKill = new java.util.HashSet<>();
-
-    this.oneTransferGen = new java.util.HashSet<>();
-    this.oneTransferKill = new java.util.HashSet<>();
+//    this.oneStmGen = new java.util.HashSet<>();
+//    this.oneStmKill = new java.util.HashSet<>();
+//
+//    this.oneTransferGen = new java.util.HashSet<>();
+//    this.oneTransferKill = new java.util.HashSet<>();
 
     this.stmGen = new java.util.HashMap<>();
     this.stmKill = new java.util.HashMap<>();
     
-    this.transferGen = new java.util.HashMap<>();
-    this.transferKill = new java.util.HashMap<>();
+//    this.transferGen = new java.util.HashMap<>();
+//    this.transferKill = new java.util.HashMap<>();
 
     this.blockGen = new java.util.HashMap<>();
     this.blockKill = new java.util.HashMap<>();

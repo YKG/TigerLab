@@ -1,11 +1,5 @@
 package cfg.optimizations;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedList;
-
-
 public class LivenessVisitor implements cfg.Visitor
 {
   private boolean fixpointFlag;
